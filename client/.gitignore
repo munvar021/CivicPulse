@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+.report/
+
+# Node.js
+# attention: when using install to deploy to production, exclude node_modules.
+node_modules
+/node_modules
+
+# Runtime data
+.next
+.nuxt
+.svelte-kit
+.vercel
+/out
+/dist
+/build
+.vite
+.cache
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.DS_Store
+
+# dotenv environment variables file
+.env*.local
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.bak
+
+# misc
+*.orig
+package-lock.json
+
+# System Files
+.DS_Store
+Thumbs.db

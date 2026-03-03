@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="CivicPulse - Public Issue Reporting Platform" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>CivicPulse</title>
+    <style>
+      #initial-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #0B0F14 0%, #1a1f2e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+      }
+      .loader-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+      .spinner {
+        position: relative;
+        width: 120px;
+        height: 120px;
+      }
+      .spinner-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #3b82f6;
+        border-right-color: #3b82f6;
+        animation: rotate 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+      }
+      .spinner-ring-inner {
+        position: absolute;
+        width: 75%;
+        height: 75%;
+        top: 12.5%;
+        left: 12.5%;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-bottom-color: #8b5cf6;
+        border-left-color: #8b5cf6;
+        animation: rotate 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
+      }
+      .spinner-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+        animation: float 3s ease-in-out infinite;
+      }
+      .loader-text {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #ffffff;
+        animation: pulse 2s ease-in-out infinite;
+        letter-spacing: 0.5px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      }
+      @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes float {
+        0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+        50% { transform: translate(-50%, -50%) translateY(-10px); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="initial-loader">
+      <div class="loader-content">
+        <div class="spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring-inner"></div>
+          <div class="spinner-icon">
+            <i class="fas fa-landmark"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="root"></div>
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loader = document.getElementById('initial-loader');
+          if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.3s ease';
+            setTimeout(function() {
+              loader.remove();
+            }, 300);
+          }
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
