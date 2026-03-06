@@ -179,7 +179,7 @@ export const Card = styled.div`
   border-radius: 20px;
   box-shadow: ${theme.liquidGlass.boxShadow};
   width: 100%;
-  max-width: 500px;
+  max-width: 900px;
   position: relative;
   z-index: 1;
   animation: ${scaleIn} 0.6s ease-out;
@@ -201,12 +201,16 @@ export const Subtitle = styled.p`
 
 export const RoleGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   animation: ${fadeInUp} 0.6s ease-out 0.3s both;
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 

@@ -48,13 +48,6 @@ const RoleSelection = () => {
             <RoleTitle>Department Admin</RoleTitle>
             <RoleDescription>Oversee department operations</RoleDescription>
           </RoleCard>
-          <RoleCard to="/superadmin/login">
-            <RoleIcon>
-              <FontAwesomeIcon icon={faBolt} />
-            </RoleIcon>
-            <RoleTitle>Super Admin</RoleTitle>
-            <RoleDescription>System administration</RoleDescription>
-          </RoleCard>
         </RoleGrid>
         <BackLink to="/" title="Back to Home">
           <FontAwesomeIcon icon={faArrowLeft} />

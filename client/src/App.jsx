@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { GlobalStyles } from "./styles/GlobalStyles";
 import { initScrollReactiveLighting } from "./utils/scrollReactiveLighting";
 import ScrollToTop from "./components/ScrollToTop/scrollToTop";
@@ -15,13 +16,12 @@ import ProtectedRoute from "./routes/protectedRoute";
 import NotFound from "./Pages/NotFound/notFound";
 import Unauthorized from "./Pages/Unauthorized/unauthorized";
 import Toast from "./components/Toast/toast";
-import { useAuth } from "./context/authContext";
 import Loader from "./components/Loaders/loader";
 import { routesByRole } from "./routes/protectedRoutes";
 import "./App.css";
 
 const App = () => {
-  const { loading } = useAuth();
+  const { checkingAuth } = useSelector((state) => state.auth);
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const App = () => {
     return cleanup;
   }, []);
 
-  if (loading || !appReady) {
+  if (checkingAuth || !appReady) {
     return (
       <>
         <GlobalStyles />
@@ -51,9 +51,12 @@ const App = () => {
             <Route path="/citizen/register" element={<CitizenRegister />} />
             <Route path="/officer/login" element={<OfficerLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/superadmin/login" element={<SuperAdminLogin />} />
             <Route
-              path="/superadmin/register"
+              path="/sys-admin-portal-x7k9m"
+              element={<SuperAdminLogin />}
+            />
+            <Route
+              path="/sys-admin-register-x7k9m"
               element={<SuperAdminRegister />}
             />
 

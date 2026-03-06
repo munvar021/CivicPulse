@@ -2,7 +2,7 @@ import axios from "axios";
 import toast from "../utils/toast";
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8080/api",
+  baseURL: process.env.REACT_APP_API_BASE_URL,
   withCredentials: true,
   timeout: 10000,
 });
@@ -13,6 +13,15 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    if (
+      config.url?.includes("/superadmin") &&
+      !config.url?.includes("/verify-access")
+    ) {
+      const accessCode = process.env.REACT_APP_SUPERADMIN_ACCESS_CODE;
+      config.headers["x-admin-access-code"] = accessCode;
+    }
+
     return config;
   },
   (error) => {
@@ -25,7 +34,10 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    if (
+      error.response?.status === 401 &&
+      !error.config.url.includes("/users/me")
+    ) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     } else if (error.response?.status === 403) {

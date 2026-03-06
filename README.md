@@ -82,7 +82,8 @@ A world where every citizen has a voice in their community's development and eve
 - 🏛️ **Department Setup**: Configure departments and zones
 - ⚙️ **System Settings**: Global configuration management
 - 📊 **Global Reports**: Export system-wide data and insights
-- 🔐 **Self-Registration**: SuperAdmins can register independently with sequential ID (SA-XXXXXX)
+- 🔐 **Secure Access**: Hidden portal with multi-layer security
+- 🔑 **Access Code Protection**: Requires secret code validation (frontend + backend)
 
 ---
 
@@ -227,19 +228,31 @@ npm start
 
 ### 4. Create SuperAdmin Account
 
-```bash
-# Navigate to SuperAdmin registration
-open http://localhost:3000/superadmin/register
+**⚠️ Important: SuperAdmin portal is hidden and secured**
 
-# Fill in the registration form with:
+```bash
+# Navigate to hidden SuperAdmin portal
+open http://localhost:3000/sys-admin-portal-x7k9m
+
+# Step 1: Enter access code when prompted
+# Default code: CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+# (Change in production - see ACCESS_CODE.md)
+
+# Step 2: After access granted, fill registration form:
 # - Full Name
 # - Email
 # - Password (min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char)
 # - Phone Number
 
 # Your SuperAdmin ID will be auto-generated (SA-000001, SA-000002, etc.)
-# Login at http://localhost:3000/superadmin/login
 ```
+
+**🔒 Security Notes:**
+- SuperAdmin NOT visible in role selection (`/login`)
+- Requires access code (frontend AccessGate + backend middleware)
+- 3 failed attempts = lockout + redirect
+- Change access code in `.env` files for production
+- See `ACCESS_CODE.md` for complete documentation
 
 ### 5. Access the Application
 
@@ -258,7 +271,7 @@ open http://localhost:3000/superadmin/register
 | 🏠 **Citizen**     | CZ-XXXXXX | Basic        | Report issues, track complaints, view nearby problems |
 | 👮 **Officer**     | OF-XXXXXX | Field        | Manage assigned tasks, update status, upload proof    |
 | 🏢 **Admin**       | AD-XXXXXX | Department   | Assign tasks, manage officers, generate reports       |
-| 🔧 **Super Admin** | SA-XXXXXX | System       | Full system access, user management, global settings  |
+| 🔧 **Super Admin** | SA-XXXXXX | System       | Full system access (Hidden portal with access code security) |
 
 </div>
 
@@ -280,11 +293,12 @@ IDs are automatically generated during user registration and increment sequentia
 ### Authentication Endpoints
 
 ```http
-POST /api/auth/login                # User login (all roles)
-POST /api/citizens/register         # Citizen self-registration
-POST /api/auth/superadmin/register  # SuperAdmin self-registration
-GET  /api/auth/me                   # Get current user
-POST /api/auth/logout               # User logout
+POST /api/auth/login                      # User login (all roles)
+POST /api/citizens/register               # Citizen self-registration
+POST /api/superadmin/verify-access        # Verify SuperAdmin access code
+POST /api/superadmin/register             # SuperAdmin registration (requires access code header)
+GET  /api/auth/me                         # Get current user
+POST /api/auth/logout                     # User logout
 ```
 
 ### Complaint Management
@@ -307,6 +321,36 @@ DELETE /api/users/:id        # Delete user (admin only)
 ```
 
 For complete API documentation, see [API Reference](./server/README.md#api-endpoints).
+
+---
+
+## 🔐 SuperAdmin Security
+
+SuperAdmin access is protected with multiple security layers:
+
+### **Hidden URLs**
+- Login: `/sys-admin-portal-x7k9m`
+- Register: `/sys-admin-register-x7k9m`
+- NOT visible in role selection page (`/login`)
+
+### **Access Code Protection**
+- **Frontend**: AccessGate component validates code
+- **Backend**: Middleware validates `x-admin-access-code` header
+- **Lockout**: 3 failed attempts = redirect to home
+
+### **Configuration**
+```env
+# client/.env
+REACT_APP_SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+
+# server/.env
+SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+```
+
+### **Documentation**
+- 📄 `ACCESS_CODE.md` - How to get and change access code
+- 📄 `SUPERADMIN_SECURITY.md` - Complete security guide
+- 📄 `client/src/components/AccessGate/WORKFLOW.md` - AccessGate workflow
 
 ---
 

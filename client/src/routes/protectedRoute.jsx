@@ -1,12 +1,12 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useSelector } from "react-redux";
 import Loader from "../components/Loaders/loader";
 
 const ProtectedRoute = ({ children, roles }) => {
-  const { user, loading } = useAuth();
+  const { user, checkingAuth } = useSelector((state) => state.auth);
 
-  if (loading) {
+  if (checkingAuth) {
     return (
       <div
         style={{
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, roles }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   if (roles && roles.length > 0 && !roles.includes(user.role)) {

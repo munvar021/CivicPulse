@@ -179,7 +179,10 @@ cp .env.example .env
 Edit `.env` with your configuration:
 ```env
 REACT_APP_API_BASE_URL=http://localhost:8080/api
+REACT_APP_SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
 ```
+
+**Note**: Change `REACT_APP_SUPERADMIN_ACCESS_CODE` in production. See `ACCESS_CODE.md` for details.
 
 4. **Start the development server**
 ```bash
@@ -320,8 +323,14 @@ const api = axios.create({
 
 ### Registration
 - **Citizens**: Self-registration at `/citizen/register`
-- **SuperAdmin**: Self-registration at `/superadmin/register`
+- **SuperAdmin**: Hidden portal at `/sys-admin-portal-x7k9m` (requires access code)
 - **Officers/Admins**: Created by SuperAdmin via User Management portal
+
+### SuperAdmin Security
+- **Hidden URLs**: Not visible in role selection page
+- **Access Code**: Required before login/register (frontend + backend validation)
+- **Lockout**: 3 failed attempts = redirect
+- **Configuration**: Set `REACT_APP_SUPERADMIN_ACCESS_CODE` in `.env`
 
 ### Sequential ID System
 Each user receives a unique, sequential ID based on their role:
@@ -407,17 +416,20 @@ npm run eject          # Eject from Create React App
 | Variable | Description | Required | Default |
 |----------|-------------|----------|----------|
 | REACT_APP_API_BASE_URL | Backend API base URL | Yes | http://localhost:8080/api |
+| REACT_APP_SUPERADMIN_ACCESS_CODE | SuperAdmin access code | Yes | CP_xIPz47AexFlr4fYlvN0fXAOZBMTx |
 
 ### Environment Setup
 
 1. **Development Environment**
 ```env
 REACT_APP_API_BASE_URL=http://localhost:8080/api
+REACT_APP_SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
 ```
 
 2. **Production Environment**
 ```env
 REACT_APP_API_BASE_URL=https://your-api-domain.com/api
+REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_random_code
 ```
 
 **Note**: All environment variables must be prefixed with `REACT_APP_` to be accessible in the React application.

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../../context/authContext";
+import { useDispatch } from "react-redux";
+import { login } from "../../../store/slices/authSlice";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
 import {
   Container,
@@ -20,7 +21,6 @@ import {
   PasswordWrapper,
   PasswordInput,
   PasswordToggle,
-  Spinner,
 } from "../authStyles";
 import toast from "../../../utils/toast";
 
@@ -36,17 +36,22 @@ const LoginForm = ({ title, role, navigateTo, showRegisterLink = false }) => {
     },
   });
   const navigate = useNavigate();
-  const { login, loading } = useAuth();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      await login(data.email, data.password, role);
+      await dispatch(
+        login({ email: data.email, password: data.password, role }),
+      ).unwrap();
       toast.success("Login successful!");
-      navigate(navigateTo);
+      navigate(navigateTo, { replace: true });
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Login failed";
-      toast.error(errorMessage);
+      toast.error(error || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 

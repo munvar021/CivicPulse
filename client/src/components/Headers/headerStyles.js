@@ -100,6 +100,9 @@ export const NavItem = styled.button`
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 
   &:hover {
     color: ${theme.colors.text.primary};
@@ -107,15 +110,22 @@ export const NavItem = styled.button`
     transform: translateY(-2px);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     width: 100%;
-    text-align: center;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
-    border-radius: 16px;
+    justify-content: flex-start;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 14px;
+    gap: 1rem;
+
+    svg {
+      font-size: 1.2rem;
+      min-width: 20px;
+    }
 
     &:hover {
-      transform: scale(1.02);
+      transform: translateX(4px);
+      background: rgba(255, 255, 255, 0.12);
     }
   }
 `;
@@ -145,43 +155,101 @@ export const MobileMenuButton = styled.button`
 
 export const MobileMenu = styled.div`
   position: fixed;
-  top: calc(8px + 60px);
-  left: 8px;
-  right: 8px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 300px;
   background: ${theme.colors.glass.base};
   backdrop-filter: blur(80px) saturate(220%);
   -webkit-backdrop-filter: blur(80px) saturate(220%);
-  padding: 1.5rem 1rem;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  transform: ${({ $open }) =>
-    $open ? "translateY(0) scale(1)" : "translateY(-10px) scale(0.95)"};
+  transform: ${({ $open }) => ($open ? "translateX(0)" : "translateX(100%)")};
   opacity: ${({ $open }) => ($open ? 1 : 0)};
   visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
-  z-index: 999;
-  border-radius: 20px;
-  border: ${theme.liquidGlass.border};
-  max-height: ${({ $open }) => ($open ? "80vh" : "0")};
-  overflow: hidden;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  border-left: ${theme.liquidGlass.border};
+  overflow-y: auto;
 
   &::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: 1px;
+    bottom: 0;
+    width: 1px;
     background: linear-gradient(
-      90deg,
+      180deg,
       transparent,
       rgba(255, 255, 255, 0.2) 50%,
       transparent
     );
-    border-radius: 20px 20px 0 0;
   }
+
+  @media (min-width: 1025px) {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    width: 280px;
+  }
+`;
+
+export const MobileMenuHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+export const MobileMenuTitle = styled.h3`
+  color: ${theme.colors.text.primary};
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+`;
+
+export const CloseButton = styled.button`
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: ${theme.colors.text.primary};
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(90deg);
+  }
+
+  &:active {
+    transform: rotate(90deg) scale(0.95);
+  }
+`;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
 
   @media (min-width: 1025px) {
     display: none;

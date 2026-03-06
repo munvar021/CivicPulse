@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../../context/authContext";
+import { useDispatch } from "react-redux";
+import { register as registerAction } from "../../../store/slices/authSlice";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
 import {
   Container,
@@ -39,12 +40,14 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
     },
   });
   const navigate = useNavigate();
-  const { register: registerUser, loading } = useAuth();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const password = watch("password");
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const userData = {
         name: data.name,
@@ -53,11 +56,13 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
         password: data.password,
       };
 
-      await registerUser(userData, role);
+      await dispatch(registerAction({ userData, role })).unwrap();
       toast.success("Registration successful!");
-      navigate(navigateTo);
+      navigate(navigateTo, { replace: true });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed");
+      toast.error(error || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 

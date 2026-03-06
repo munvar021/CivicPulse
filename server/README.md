@@ -76,14 +76,17 @@ cp .env.example .env
 Edit `.env` with your configuration:
 ```env
 NODE_ENV=development
-PORT=5000
+PORT=8080
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRE=30d
 CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
+SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
 ```
+
+**Note**: Change `SUPERADMIN_ACCESS_CODE` in production. Must match frontend code.
 
 4. **Start the server**
 ```bash
@@ -97,9 +100,10 @@ npm start
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - Citizen registration
-- `POST /api/auth/superadmin/register` - SuperAdmin registration
+- `POST /api/auth/login` - User login (all roles)
+- `POST /api/citizens/register` - Citizen registration
+- `POST /api/superadmin/verify-access` - Verify SuperAdmin access code
+- `POST /api/superadmin/register` - SuperAdmin registration (requires access code header)
 
 ### Citizen Routes
 - `GET /api/citizen/dashboard` - Get dashboard data
@@ -128,6 +132,7 @@ npm start
 - `GET /api/admin/escalations` - Get escalated complaints
 
 ### SuperAdmin Routes
+- `POST /api/superadmin/verify-access` - Verify access code
 - `GET /api/superadmin/dashboard` - Get dashboard data
 - `GET /api/superadmin/reports` - Get global reports
 - `GET /api/superadmin/monitoring` - Get system monitoring data
@@ -143,6 +148,8 @@ npm start
 - `PUT /api/settings` - Update settings
 - `GET /api/categories` - Get categories
 - `POST /api/categories` - Create category
+
+**Note**: All SuperAdmin routes (except `/verify-access`) require `x-admin-access-code` header.
 
 ## Authentication & Authorization
 
@@ -191,6 +198,7 @@ authorize([roles])  // Check user role
 - Password hashing with bcrypt
 - Role-based access control (RBAC)
 - Protected routes and authorization middleware
+- SuperAdmin access code validation (frontend + backend)
 
 ### File Upload
 - Image upload to Cloudinary
@@ -233,6 +241,7 @@ npm run migrate:timeline  # Run timeline migration
 | CLOUDINARY_CLOUD_NAME | Cloudinary cloud name | Yes |
 | CLOUDINARY_API_KEY | Cloudinary API key | Yes |
 | CLOUDINARY_API_SECRET | Cloudinary API secret | Yes |
+| SUPERADMIN_ACCESS_CODE | SuperAdmin access code | Yes |
 
 ## Development
 

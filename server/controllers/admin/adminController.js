@@ -5,19 +5,32 @@ const Complaint = require("../../models/general/Complaint");
 const asyncHandler = require("express-async-handler");
 const { authenticateUser, setCookieToken } = require("../../utils/authHelper");
 const { validateUniqueFields } = require("../../utils/validationHelper");
-const { syncUserEmail, ensureUserExists, deleteUserByEmail } = require("../../utils/userHelper");
-const { buildComplaintQuery, getPaginationParams, buildPaginatedResponse } = require("../../utils/queryHelper");
+const {
+  syncUserEmail,
+  ensureUserExists,
+  deleteUserByEmail,
+} = require("../../utils/userHelper");
+const {
+  buildComplaintQuery,
+  getPaginationParams,
+  buildPaginatedResponse,
+} = require("../../utils/queryHelper");
 
 const authAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const { user, token } = await authenticateUser(Admin, email, password);
-  
+
   setCookieToken(res, token);
-  
+
+  const admin = await Admin.findOne({ email }).select("name phone").lean();
+
   res.json({
     _id: user._id,
+    name: admin?.name,
     email: user.email,
+    phone: admin?.phone,
     role: user.role,
+    token,
   });
 });
 
@@ -52,7 +65,7 @@ const createOfficer = asyncHandler(async (req, res) => {
   const populatedOfficer = await Officer.findById(officer._id)
     .populate("department", "name")
     .lean();
-  
+
   res.status(201).json(populatedOfficer);
 });
 
@@ -78,11 +91,11 @@ const updateOfficer = asyncHandler(async (req, res) => {
   officer.name = req.body.name || officer.name;
   officer.email = updateData.email || officer.email;
   officer.phone = updateData.phone || officer.phone;
-  
+
   if (req.body.password) {
     officer.password = req.body.password;
   }
-  
+
   await officer.save();
 
   if (updateData.email) {
@@ -94,36 +107,39 @@ const updateOfficer = asyncHandler(async (req, res) => {
   const populatedOfficer = await Officer.findById(officer._id)
     .populate("department", "name")
     .lean();
-  
+
   res.json(populatedOfficer);
 });
 
 const deleteOfficer = asyncHandler(async (req, res) => {
   const officer = await Officer.findById(req.params.id);
 
-  if (!officer || officer.department.toString() !== req.user.department.toString()) {
+  if (
+    !officer ||
+    officer.department.toString() !== req.user.department.toString()
+  ) {
     res.status(404);
     throw new Error("Officer not found or not in your department");
   }
 
   await deleteUserByEmail(officer.email);
   await officer.deleteOne();
-  
+
   res.json({ message: "Officer removed" });
 });
 
 const getMe = asyncHandler(async (req, res) => {
   const admin = await Admin.findOne({ email: req.user.email })
-    .populate('department', 'name')
-    .populate('zone', 'name')
-    .select('-password')
+    .populate("department", "name")
+    .populate("zone", "name")
+    .select("-password")
     .lean();
-  
+
   if (!admin) {
     res.status(404);
-    throw new Error('Admin not found');
+    throw new Error("Admin not found");
   }
-  
+
   res.json(admin);
 });
 
@@ -132,7 +148,7 @@ const updateAdminProfile = asyncHandler(async (req, res) => {
 
   if (!admin) {
     res.status(404);
-    throw new Error('Admin not found');
+    throw new Error("Admin not found");
   }
 
   const updateData = {};
@@ -157,10 +173,12 @@ const updateAdminProfile = asyncHandler(async (req, res) => {
   await admin.save();
 
   if (updateData.email) {
-    await syncUserEmail(oldEmail, updateData.email, 'admin', { department: admin.department });
+    await syncUserEmail(oldEmail, updateData.email, "admin", {
+      department: admin.department,
+    });
   }
 
-  await admin.populate('department', 'name');
+  await admin.populate("department", "name");
 
   res.json({
     _id: admin._id,
@@ -181,17 +199,27 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
   const departmentId = req.user.department;
   const now = new Date();
 
-  const [pending, reassigned, inProgress, resolved, delayed] = await Promise.all([
-    Complaint.countDocuments({ department: departmentId, status: "pending" }),
-    Complaint.countDocuments({ department: departmentId, status: "reassigned" }),
-    Complaint.countDocuments({ department: departmentId, status: "in-progress" }),
-    Complaint.countDocuments({ department: departmentId, status: "resolved" }),
-    Complaint.countDocuments({
-      department: departmentId,
-      status: { $nin: ["resolved", "closed"] },
-      dueDate: { $lt: now },
-    }),
-  ]);
+  const [pending, reassigned, inProgress, resolved, delayed] =
+    await Promise.all([
+      Complaint.countDocuments({ department: departmentId, status: "pending" }),
+      Complaint.countDocuments({
+        department: departmentId,
+        status: "reassigned",
+      }),
+      Complaint.countDocuments({
+        department: departmentId,
+        status: "in-progress",
+      }),
+      Complaint.countDocuments({
+        department: departmentId,
+        status: "resolved",
+      }),
+      Complaint.countDocuments({
+        department: departmentId,
+        status: { $nin: ["resolved", "closed"] },
+        dueDate: { $lt: now },
+      }),
+    ]);
 
   res.json({ pending, reassigned, inProgress, resolved, delayed });
 });
@@ -202,7 +230,9 @@ const getRecentComplaints = asyncHandler(async (req, res) => {
     throw new Error("Admin department not found");
   }
 
-  const recentComplaints = await Complaint.find({ department: req.user.department })
+  const recentComplaints = await Complaint.find({
+    department: req.user.department,
+  })
     .sort({ createdAt: -1 })
     .limit(5)
     .populate("citizen", "name")
@@ -219,11 +249,15 @@ const getComplaints = asyncHandler(async (req, res) => {
   }
 
   const { status, priority, category, page, limit } = req.query;
-  const { skip, limit: limitNum, page: pageNum } = getPaginationParams(page, limit);
+  const {
+    skip,
+    limit: limitNum,
+    page: pageNum,
+  } = getPaginationParams(page, limit);
 
   const query = buildComplaintQuery(
     { department: req.user.department },
-    { status, priority, category }
+    { status, priority, category },
   );
 
   const [complaints, total] = await Promise.all([
@@ -282,7 +316,11 @@ const getEscalatedComplaints = asyncHandler(async (req, res) => {
   }
 
   const { page, limit } = req.query;
-  const { skip, limit: limitNum, page: pageNum } = getPaginationParams(page, limit);
+  const {
+    skip,
+    limit: limitNum,
+    page: pageNum,
+  } = getPaginationParams(page, limit);
 
   const query = {
     department: req.user.department,
@@ -350,20 +388,26 @@ const getReports = asyncHandler(async (req, res) => {
       if (c.status === "reassigned") acc.reassigned++;
       return acc;
     },
-    { received: 0, resolved: 0, pending: 0, reassigned: 0 }
+    { received: 0, resolved: 0, pending: 0, reassigned: 0 },
   );
 
-  const priorityBreakdown = ["low", "medium", "high", "critical"].map((priority) => {
-    const priorityComplaints = complaints.filter((c) => c.severity === priority);
-    const resolved = priorityComplaints.filter((c) => c.status === "resolved").length;
-    
-    return {
-      priority: priority.charAt(0).toUpperCase() + priority.slice(1),
-      total: priorityComplaints.length,
-      resolved,
-      pending: priorityComplaints.length - resolved,
-    };
-  });
+  const priorityBreakdown = ["low", "medium", "high", "critical"].map(
+    (priority) => {
+      const priorityComplaints = complaints.filter(
+        (c) => c.severity === priority,
+      );
+      const resolved = priorityComplaints.filter(
+        (c) => c.status === "resolved",
+      ).length;
+
+      return {
+        priority: priority.charAt(0).toUpperCase() + priority.slice(1),
+        total: priorityComplaints.length,
+        resolved,
+        pending: priorityComplaints.length - resolved,
+      };
+    },
+  );
 
   res.json({ overallStats: stats, priorityBreakdown });
 });
@@ -376,21 +420,25 @@ const getAdminProfileStats = asyncHandler(async (req, res) => {
 
   const departmentId = req.user.department;
 
-  const [totalManaged, resolved, pending, resolvedWithDates] = await Promise.all([
-    Complaint.countDocuments({ department: departmentId }),
-    Complaint.countDocuments({ department: departmentId, status: "resolved" }),
-    Complaint.countDocuments({
-      department: departmentId,
-      status: { $in: ["pending", "in-progress"] },
-    }),
-    Complaint.find({
-      department: departmentId,
-      status: "resolved",
-      resolutionDate: { $exists: true, $ne: null },
-    })
-      .select("createdAt resolutionDate")
-      .lean(),
-  ]);
+  const [totalManaged, resolved, pending, resolvedWithDates] =
+    await Promise.all([
+      Complaint.countDocuments({ department: departmentId }),
+      Complaint.countDocuments({
+        department: departmentId,
+        status: "resolved",
+      }),
+      Complaint.countDocuments({
+        department: departmentId,
+        status: { $in: ["pending", "in-progress"] },
+      }),
+      Complaint.find({
+        department: departmentId,
+        status: "resolved",
+        resolutionDate: { $exists: true, $ne: null },
+      })
+        .select("createdAt resolutionDate")
+        .lean(),
+    ]);
 
   const totalResolutionTimeMs = resolvedWithDates.reduce((sum, c) => {
     return sum + (c.resolutionDate.getTime() - c.createdAt.getTime());
@@ -398,7 +446,11 @@ const getAdminProfileStats = asyncHandler(async (req, res) => {
 
   const avgResolutionTime =
     resolvedWithDates.length > 0
-      ? (totalResolutionTimeMs / resolvedWithDates.length / (1000 * 60 * 60 * 24)).toFixed(1) + " days"
+      ? (
+          totalResolutionTimeMs /
+          resolvedWithDates.length /
+          (1000 * 60 * 60 * 24)
+        ).toFixed(1) + " days"
       : "0 days";
 
   res.json({ totalManaged, resolved, pending, avgResolutionTime });
@@ -420,7 +472,9 @@ const assignComplaint = asyncHandler(async (req, res) => {
     throw new Error("Complaint not found");
   }
 
-  const adminProfile = await Admin.findOne({ email: req.user.email }).select('_id name').lean();
+  const adminProfile = await Admin.findOne({ email: req.user.email })
+    .select("_id name")
+    .lean();
 
   complaint.assignedTo = officer;
   complaint.severity = priority;
@@ -429,11 +483,11 @@ const assignComplaint = asyncHandler(async (req, res) => {
   complaint.status = "assigned";
 
   complaint.timeline.unshift({
-    eventType: 'assigned',
-    status: 'assigned',
+    eventType: "assigned",
+    status: "assigned",
     description: `Assigned to road maintenance officer`,
     updatedBy: adminProfile?._id || req.user._id,
-    updatedByModel: 'Admin',
+    updatedByModel: "Admin",
     date: new Date(),
   });
 
@@ -460,21 +514,23 @@ const updateDueDate = asyncHandler(async (req, res) => {
     throw new Error("Complaint not found");
   }
 
-  const adminProfile = await Admin.findOne({ email: req.user.email }).select('_id name').lean();
+  const adminProfile = await Admin.findOne({ email: req.user.email })
+    .select("_id name")
+    .lean();
   const oldDueDate = complaint.dueDate;
 
   complaint.dueDate = dueDate;
 
   complaint.timeline.unshift({
-    eventType: 'due_date_updated',
+    eventType: "due_date_updated",
     status: complaint.status,
-    description: reason || 'Due date updated',
+    description: reason || "Due date updated",
     updatedBy: adminProfile?._id || req.user._id,
-    updatedByModel: 'Admin',
+    updatedByModel: "Admin",
     metadata: {
       oldDueDate: oldDueDate,
       newDueDate: dueDate,
-      reason: reason || 'Due date updated',
+      reason: reason || "Due date updated",
     },
     date: new Date(),
   });
@@ -508,7 +564,7 @@ const updateAssignment = asyncHandler(async (req, res) => {
   await complaint.populate([
     { path: "assignedTo", select: "name email phone" },
     { path: "citizen", select: "name email" },
-    { path: "department", select: "name" }
+    { path: "department", select: "name" },
   ]);
 
   res.json(complaint);
@@ -537,7 +593,9 @@ const reassignComplaint = asyncHandler(async (req, res) => {
     throw new Error("Officer not found");
   }
 
-  const adminProfile = await Admin.findOne({ email: req.user.email }).select('_id name').lean();
+  const adminProfile = await Admin.findOne({ email: req.user.email })
+    .select("_id name")
+    .lean();
 
   complaint.reassignmentHistory.push({
     fromOfficer: complaint.assignedTo,
@@ -550,14 +608,14 @@ const reassignComplaint = asyncHandler(async (req, res) => {
 
   complaint.assignedTo = officer;
   complaint.dueDate = dueDate;
-  complaint.status = 'reassigned';
+  complaint.status = "reassigned";
 
   complaint.timeline.unshift({
-    eventType: 'reassigned',
-    status: 'reassigned',
-    description: reason || 'Area reassignment',
+    eventType: "reassigned",
+    status: "reassigned",
+    description: reason || "Area reassignment",
     updatedBy: adminProfile?._id || req.user._id,
-    updatedByModel: 'Admin',
+    updatedByModel: "Admin",
     metadata: {
       fromOfficer: complaint.assignedTo,
       toOfficer: officer,
@@ -568,7 +626,7 @@ const reassignComplaint = asyncHandler(async (req, res) => {
 
   complaint.progressUpdates.unshift({
     status: "reassigned",
-    remarks: `Reassigned By: ${adminProfile?.name || req.user.name || 'Admin'}\nReassigned To: ${newOfficer.name}\nDue Date: ${new Date(dueDate).toLocaleDateString()}\nReason: ${reason.replace(/\n/g, ' ')}`,
+    remarks: `Reassigned By: ${adminProfile?.name || req.user.name || "Admin"}\nReassigned To: ${newOfficer.name}\nDue Date: ${new Date(dueDate).toLocaleDateString()}\nReason: ${reason.replace(/\n/g, " ")}`,
     updatedBy: adminProfile?._id || req.user._id,
   });
 
@@ -602,20 +660,22 @@ const verifyComplaint = asyncHandler(async (req, res) => {
     throw new Error("Complaint not found");
   }
 
-  const adminProfile = await Admin.findOne({ email: req.user.email }).select('_id name').lean();
+  const adminProfile = await Admin.findOne({ email: req.user.email })
+    .select("_id name")
+    .lean();
 
   complaint.timeline.unshift({
-    eventType: 'verified',
+    eventType: "verified",
     status: complaint.status,
-    description: 'Complaint verified and approved',
+    description: "Complaint verified and approved",
     updatedBy: adminProfile?._id || req.user._id,
-    updatedByModel: 'Admin',
+    updatedByModel: "Admin",
     date: new Date(),
   });
 
   await complaint.save();
 
-  res.json({ message: 'Complaint verified successfully' });
+  res.json({ message: "Complaint verified successfully" });
 });
 
 module.exports = {

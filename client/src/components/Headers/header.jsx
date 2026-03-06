@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBars,
-  faTimes,
-  faSignOutAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/logo.png";
 import ConfirmationModal from "../ConfirmationModal/confirmationModal";
 import { useAuth } from "../../context/authContext";
@@ -16,6 +12,10 @@ import {
   NavItem,
   MobileMenuButton,
   MobileMenu,
+  MobileMenuHeader,
+  MobileMenuTitle,
+  CloseButton,
+  Overlay,
 } from "./headerStyles";
 
 const Header = ({ navItems = [] }) => {
@@ -111,11 +111,22 @@ const Header = ({ navItems = [] }) => {
         </Nav>
 
         <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-          <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} />
+          <FontAwesomeIcon icon={faBars} />
         </MobileMenuButton>
       </HeaderContainer>
 
+      <Overlay
+        $open={mobileMenuOpen}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
       <MobileMenu $open={mobileMenuOpen} ref={mobileMenuRef}>
+        <MobileMenuHeader>
+          <MobileMenuTitle>Menu</MobileMenuTitle>
+          <CloseButton onClick={() => setMobileMenuOpen(false)}>
+            <FontAwesomeIcon icon={faTimes} />
+          </CloseButton>
+        </MobileMenuHeader>
         <Nav>
           {navItems.map((item) => (
             <NavItem
@@ -126,6 +137,7 @@ const Header = ({ navItems = [] }) => {
               }}
               $active={isActive(item.path)}
             >
+              {item.icon && <FontAwesomeIcon icon={item.icon} />}
               {item.label}
             </NavItem>
           ))}
