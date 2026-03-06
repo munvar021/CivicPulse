@@ -235,8 +235,8 @@ npm start
 open http://localhost:3000/sys-admin-portal-x7k9m
 
 # Step 1: Enter access code when prompted
-# Default code: CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
-# (Change in production - see ACCESS_CODE.md)
+# Get the code from your .env file: REACT_APP_SUPERADMIN_ACCESS_CODE
+# (See ACCESS_CODE.md for how to find/change it)
 
 # Step 2: After access granted, fill registration form:
 # - Full Name
@@ -341,10 +341,10 @@ SuperAdmin access is protected with multiple security layers:
 ### **Configuration**
 ```env
 # client/.env
-REACT_APP_SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code_here
 
 # server/.env
-SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+SUPERADMIN_ACCESS_CODE=your_secure_code_here
 ```
 
 ### **Documentation**

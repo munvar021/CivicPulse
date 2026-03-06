@@ -179,10 +179,10 @@ cp .env.example .env
 Edit `.env` with your configuration:
 ```env
 REACT_APP_API_BASE_URL=http://localhost:8080/api
-REACT_APP_SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code_here
 ```
 
-**Note**: Change `REACT_APP_SUPERADMIN_ACCESS_CODE` in production. See `ACCESS_CODE.md` for details.
+**Note**: Generate a strong access code. See `ACCESS_CODE.md` for details.
 
 4. **Start the development server**
 ```bash
@@ -416,20 +416,20 @@ npm run eject          # Eject from Create React App
 | Variable | Description | Required | Default |
 |----------|-------------|----------|----------|
 | REACT_APP_API_BASE_URL | Backend API base URL | Yes | http://localhost:8080/api |
-| REACT_APP_SUPERADMIN_ACCESS_CODE | SuperAdmin access code | Yes | CP_xIPz47AexFlr4fYlvN0fXAOZBMTx |
+| REACT_APP_SUPERADMIN_ACCESS_CODE | SuperAdmin access code | Yes | (generate your own) |
 
 ### Environment Setup
 
 1. **Development Environment**
 ```env
 REACT_APP_API_BASE_URL=http://localhost:8080/api
-REACT_APP_SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code_here
 ```
 
 2. **Production Environment**
 ```env
 REACT_APP_API_BASE_URL=https://your-api-domain.com/api
-REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_random_code
+REACT_APP_SUPERADMIN_ACCESS_CODE=your_production_secure_code
 ```
 
 **Note**: All environment variables must be prefixed with `REACT_APP_` to be accessible in the React application.

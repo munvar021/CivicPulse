@@ -83,10 +83,10 @@ JWT_EXPIRE=30d
 CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
-SUPERADMIN_ACCESS_CODE=CP_xIPz47AexFlr4fYlvN0fXAOZBMTx
+SUPERADMIN_ACCESS_CODE=your_secure_code_here
 ```
 
-**Note**: Change `SUPERADMIN_ACCESS_CODE` in production. Must match frontend code.
+**Note**: Generate a strong access code. Must match frontend code. See `ACCESS_CODE.md`.
 
 4. **Start the server**
 ```bash
