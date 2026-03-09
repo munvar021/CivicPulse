@@ -77,6 +77,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
               type="text"
               placeholder="Enter your full name"
               $error={errors.name}
+              disabled={loading}
               {...registerHookForm("name", {
                 required: "Name is required",
                 minLength: {
@@ -93,6 +94,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
               type="email"
               placeholder="Enter your email"
               $error={errors.email}
+              disabled={loading}
               {...registerHookForm("email", {
                 required: "Email is required",
                 pattern: {
@@ -111,6 +113,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
               type="tel"
               placeholder="Enter your phone number"
               $error={errors.phone}
+              disabled={loading}
               {...registerHookForm("phone", {
                 required: "Phone number is required",
                 pattern: {
@@ -130,6 +133,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 $error={errors.password}
+                disabled={loading}
                 {...registerHookForm("password", {
                   required: "Password is required",
                   minLength: {
@@ -147,6 +151,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
               <PasswordToggle
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
               </PasswordToggle>
@@ -162,6 +167,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 $error={errors.confirmPassword}
+                disabled={loading}
                 {...registerHookForm("confirmPassword", {
                   required: "Confirm password is required",
                   validate: (value) =>
@@ -171,6 +177,7 @@ const RegisterForm = ({ title, role, navigateTo, loginPath }) => {
               <PasswordToggle
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={loading}
               >
                 <FontAwesomeIcon
                   icon={showConfirmPassword ? faEyeSlash : faEye}

@@ -22,6 +22,11 @@ export const customReactSelectStyles = {
     backdropFilter: "blur(20px)",
     border: theme.liquidGlass.border,
     borderRadius: "12px",
+    zIndex: 9999,
+  }),
+  menuPortal: (provided) => ({
+    ...provided,
+    zIndex: 9999,
   }),
   option: (provided, state) => ({
     ...provided,

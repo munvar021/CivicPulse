@@ -1,11 +1,15 @@
-const asyncHandler = require('express-async-handler');
-const User = require('../../models/general/User');
-const Admin = require('../../models/admin/Admin');
-const Citizen = require('../../models/citizen/Citizen');
-const Officer = require('../../models/officer/Officer');
-const SuperAdmin = require('../../models/superAdmin/SuperAdmin');
-const { validateUniqueFields } = require('../../utils/validationHelper');
-const { syncUserEmail, ensureUserExists, deleteUserByEmail } = require('../../utils/userHelper');
+const asyncHandler = require("express-async-handler");
+const User = require("../../models/general/User");
+const Admin = require("../../models/admin/Admin");
+const Citizen = require("../../models/citizen/Citizen");
+const Officer = require("../../models/officer/Officer");
+const SuperAdmin = require("../../models/superAdmin/SuperAdmin");
+const { validateUniqueFields } = require("../../utils/validationHelper");
+const {
+  syncUserEmail,
+  ensureUserExists,
+  deleteUserByEmail,
+} = require("../../utils/userHelper");
 
 const getModelForRole = (role) => {
   const models = {
@@ -21,31 +25,33 @@ const getMe = asyncHandler(async (req, res) => {
   const Model = getModelForRole(req.user.role);
   if (!Model) {
     res.status(400);
-    throw new Error('Invalid role');
+    throw new Error("Invalid role");
   }
-  
-  let userData = await Model.findOne({ email: req.user.email }).select('-password').lean();
-  
+
+  let userData = await Model.findOne({ email: req.user.email })
+    .select("-password")
+    .lean();
+
   if (!userData) {
     res.status(404);
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
-  
-  if (req.user.role === 'admin' || req.user.role === 'officer') {
+
+  if (req.user.role === "admin" || req.user.role === "officer") {
     userData = await Model.findOne({ email: req.user.email })
-      .select('-password')
-      .populate('department', 'name')
+      .select("-password")
+      .populate("department", "name")
       .lean();
   }
-  
-  if (req.user.role === 'admin') {
+
+  if (req.user.role === "admin") {
     userData = await Model.findOne({ email: req.user.email })
-      .select('-password')
-      .populate('department', 'name')
-      .populate('zone', 'name')
+      .select("-password")
+      .populate("department", "name")
+      .populate("zone", "name")
       .lean();
   }
-  
+
   res.json(userData);
 });
 
@@ -53,13 +59,13 @@ const updateMe = asyncHandler(async (req, res) => {
   const Model = getModelForRole(req.user.role);
   if (!Model) {
     res.status(400);
-    throw new Error('Invalid role');
+    throw new Error("Invalid role");
   }
-  
+
   const userData = await Model.findOne({ email: req.user.email });
   if (!userData) {
     res.status(404);
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   const updateData = {};
@@ -76,72 +82,79 @@ const updateMe = asyncHandler(async (req, res) => {
   userData.name = req.body.name || userData.name;
   userData.phone = updateData.phone || userData.phone;
   userData.email = updateData.email || userData.email;
-  
+
   if (req.body.password) {
     userData.password = req.body.password;
   }
-  
+
   await userData.save();
-  
+
   if (updateData.email) {
     await syncUserEmail(oldEmail, updateData.email, req.user.role);
   } else {
     await ensureUserExists(oldEmail, req.user.role);
   }
-  
-  let result = await Model.findById(userData._id).select('-password').lean();
-  
-  if (req.user.role === 'admin' || req.user.role === 'officer') {
+
+  let result = await Model.findById(userData._id).select("-password").lean();
+
+  if (req.user.role === "admin" || req.user.role === "officer") {
     result = await Model.findById(userData._id)
-      .select('-password')
-      .populate('department', 'name')
+      .select("-password")
+      .populate("department", "name")
       .lean();
   }
-  
-  if (req.user.role === 'admin') {
+
+  if (req.user.role === "admin") {
     result = await Model.findById(userData._id)
-      .select('-password')
-      .populate('department', 'name')
-      .populate('zone', 'name')
+      .select("-password")
+      .populate("department", "name")
+      .populate("zone", "name")
       .lean();
   }
-  
+
   res.json(result);
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  res.cookie('token', '', {
+  res.cookie("token", "", {
     httpOnly: true,
     expires: new Date(0),
   });
-  res.json({ message: 'Logged out successfully' });
+  res.json({ message: "Logged out successfully" });
 });
 
 const getUsers = asyncHandler(async (req, res) => {
   const { role, department } = req.query;
-  const targetRole = role || 'citizen';
+  const targetRole = role || "citizen";
 
   const Model = getModelForRole(targetRole);
   if (!Model) {
     res.status(400);
-    throw new Error('Invalid role specified');
+    throw new Error("Invalid role specified");
   }
 
   let query = {};
-  if ((targetRole === 'admin' || targetRole === 'officer') && department && department !== 'all') {
+  if (
+    (targetRole === "admin" || targetRole === "officer") &&
+    department &&
+    department !== "all"
+  ) {
     query.department = department;
   }
 
   let results = await Model.find(query).sort({ createdAt: -1 }).lean();
-  
-  if (targetRole === 'admin' || targetRole === 'officer') {
-    results = await Model.find(query).populate('department', 'name').sort({ createdAt: -1 }).lean();
-  }
-  
-  if (targetRole === 'admin') {
+
+  if (targetRole === "admin" || targetRole === "officer") {
     results = await Model.find(query)
-      .populate('department', 'name')
-      .populate('zone', 'name')
+      .populate("department", "name")
+      .sort({ createdAt: -1 })
+      .lean();
+  }
+
+  if (targetRole === "admin") {
+    results = await Model.find(query)
+      .populate("department", "name")
+      .populate("zone", "name")
       .sort({ createdAt: -1 })
       .lean();
   }
@@ -155,31 +168,54 @@ const createUser = asyncHandler(async (req, res) => {
 
   if (!Model) {
     res.status(400);
-    throw new Error('Invalid role');
+    throw new Error("Invalid role");
   }
 
-  if ((role === 'admin' || role === 'officer') && !department) {
+  if ((role === "admin" || role === "officer") && !department) {
     res.status(400);
-    throw new Error('Department is required for admins and officers');
+    throw new Error("Department is required for admins and officers");
   }
 
   await validateUniqueFields(Model, { email, phone });
 
   const createData = { name, email, password, phone, role, department };
-  if (role === 'admin' && zone) {
+  if (role === "admin" && zone) {
     createData.zone = zone;
   }
-  
+
   const [detailedUser] = await Promise.all([
     Model.create(createData),
-    User.create({ email, role })
+    User.create({ email, role }),
   ]);
 
-  res.status(201).json(detailedUser);
+  let result = await Model.findById(detailedUser._id).lean();
+
+  if (role === "admin" || role === "officer") {
+    result = await Model.findById(detailedUser._id)
+      .populate("department", "name")
+      .lean();
+  }
+
+  if (role === "admin") {
+    result = await Model.findById(detailedUser._id)
+      .populate("department", "name")
+      .populate("zone", "name")
+      .lean();
+  }
+
+  res.status(201).json(result);
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { role: newRole, department, zone, name, email, phone, password } = req.body;
+  const {
+    role: newRole,
+    department,
+    zone,
+    name,
+    email,
+    phone,
+    password,
+  } = req.body;
 
   const models = [Admin, Citizen, Officer];
   let oldUserData, oldRole;
@@ -194,7 +230,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
   if (!oldUserData) {
     res.status(404);
-    throw new Error('User not found in any role collection');
+    throw new Error("User not found in any role collection");
   }
 
   const Model = getModelForRole(oldRole);
@@ -215,7 +251,7 @@ const updateUser = asyncHandler(async (req, res) => {
     const NewModel = getModelForRole(newRole);
     if (!NewModel) {
       res.status(400);
-      throw new Error('Invalid new role');
+      throw new Error("Invalid new role");
     }
 
     const createData = {
@@ -226,10 +262,10 @@ const updateUser = asyncHandler(async (req, res) => {
       role: newRole,
     };
 
-    if (newRole === 'admin' || newRole === 'officer') {
+    if (newRole === "admin" || newRole === "officer") {
       createData.department = department || oldUserData.department;
     }
-    if (newRole === 'admin' && zone) {
+    if (newRole === "admin" && zone) {
       createData.zone = zone;
     }
 
@@ -238,61 +274,63 @@ const updateUser = asyncHandler(async (req, res) => {
       oldUserData.deleteOne(),
       User.findOneAndUpdate(
         { email: oldUserData.email },
-        { role: newRole, email: email || oldUserData.email }
-      )
+        { role: newRole, email: email || oldUserData.email },
+      ),
     ]);
 
-    let newUser = await NewModel.findOne({ email: email || oldUserData.email }).lean();
-    
-    if (newRole === 'admin' || newRole === 'officer') {
+    let newUser = await NewModel.findOne({
+      email: email || oldUserData.email,
+    }).lean();
+
+    if (newRole === "admin" || newRole === "officer") {
       newUser = await NewModel.findOne({ email: email || oldUserData.email })
-        .populate('department', 'name')
+        .populate("department", "name")
         .lean();
     }
-    if (newRole === 'admin') {
+    if (newRole === "admin") {
       newUser = await NewModel.findOne({ email: email || oldUserData.email })
-        .populate('department', 'name')
-        .populate('zone', 'name')
+        .populate("department", "name")
+        .populate("zone", "name")
         .lean();
     }
-    
+
     res.json(newUser);
   } else {
     const oldEmail = oldUserData.email;
     oldUserData.name = name || oldUserData.name;
     oldUserData.email = updateData.email || oldUserData.email;
     oldUserData.phone = updateData.phone || oldUserData.phone;
-    
+
     if (password) {
       oldUserData.password = password;
     }
-    if ((oldRole === 'admin' || oldRole === 'officer') && department) {
+    if ((oldRole === "admin" || oldRole === "officer") && department) {
       oldUserData.department = department;
     }
-    if (oldRole === 'admin') {
+    if (oldRole === "admin") {
       oldUserData.zone = zone || null;
     }
-    
+
     await oldUserData.save();
-    
+
     if (updateData.email) {
       await syncUserEmail(oldEmail, updateData.email, oldRole);
     }
-    
+
     let updatedUser = await Model.findById(oldUserData._id).lean();
-    
-    if (oldRole === 'admin' || oldRole === 'officer') {
+
+    if (oldRole === "admin" || oldRole === "officer") {
       updatedUser = await Model.findById(oldUserData._id)
-        .populate('department', 'name')
+        .populate("department", "name")
         .lean();
     }
-    if (oldRole === 'admin') {
+    if (oldRole === "admin") {
       updatedUser = await Model.findById(oldUserData._id)
-        .populate('department', 'name')
-        .populate('zone', 'name')
+        .populate("department", "name")
+        .populate("zone", "name")
         .lean();
     }
-    
+
     res.json(updatedUser);
   }
 });
@@ -308,18 +346,15 @@ const deleteUser = asyncHandler(async (req, res) => {
       break;
     }
   }
-  
+
   if (!userToDelete) {
     res.status(404);
-    throw new Error('User not found in any role collection');
+    throw new Error("User not found in any role collection");
   }
 
-  await Promise.all([
-    deleteUserByEmail(userEmail),
-    userToDelete.deleteOne()
-  ]);
-  
-  res.json({ message: 'User removed' });
+  await Promise.all([deleteUserByEmail(userEmail), userToDelete.deleteOne()]);
+
+  res.json({ message: "User removed" });
 });
 
 module.exports = {

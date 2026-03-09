@@ -66,6 +66,7 @@ const LoginForm = ({ title, role, navigateTo, showRegisterLink = false }) => {
               type="email"
               placeholder="Enter your email"
               $error={errors.email}
+              disabled={loading}
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -85,11 +86,13 @@ const LoginForm = ({ title, role, navigateTo, showRegisterLink = false }) => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 $error={errors.password}
+                disabled={loading}
                 {...register("password", { required: "Password is required" })}
               />
               <PasswordToggle
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
               </PasswordToggle>

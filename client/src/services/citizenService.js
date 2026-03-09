@@ -74,6 +74,7 @@ const citizenService = {
   reopenComplaint,
   updateComplaint,
   deleteComplaint,
+  getDashboardData: getCitizenDashboardData,
   getCitizenDashboardData,
   getCitizenProfile,
   updateCitizenProfile,

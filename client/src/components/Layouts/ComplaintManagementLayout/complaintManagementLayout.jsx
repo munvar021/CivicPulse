@@ -27,7 +27,11 @@ import {
 const ComplaintManagementLayout = ({ role = "admin" }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { list: complaints, loading, totalPages } = useSelector((state) => state.complaints);
+  const {
+    list: complaints,
+    loading,
+    totalPages,
+  } = useSelector((state) => state.complaints);
   const { list: departments } = useSelector((state) => state.departments);
   const [filters, setFilters] = useState({
     status: "all",
@@ -48,7 +52,7 @@ const ComplaintManagementLayout = ({ role = "admin" }) => {
     if (role === "superAdmin") {
       dispatch(fetchDepartments());
     }
-    dispatch(fetchComplaints({ ...filters, page: currentPage }));
+    dispatch(fetchComplaints({ ...filters, page: currentPage, role }));
   }, [dispatch, filters, currentPage, role]);
 
   const statusOptions = [
@@ -118,7 +122,7 @@ const ComplaintManagementLayout = ({ role = "admin" }) => {
       }
       toast.success("Officer assigned successfully");
       setAssigningComplaint(null);
-      dispatch(fetchComplaints({ ...filters, page: currentPage }));
+      dispatch(fetchComplaints({ ...filters, page: currentPage, role }));
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to assign officer");
     } finally {

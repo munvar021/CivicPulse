@@ -35,16 +35,11 @@ export const ModalContent = styled.div`
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: visible;
   box-shadow: ${theme.liquidGlass.boxShadow};
   animation: slideUp 0.3s ease-out;
-
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  display: flex;
+  flex-direction: column;
 
   @keyframes slideUp {
     from {
@@ -73,6 +68,7 @@ export const ModalTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 600;
   color: ${theme.colors.text.primary};
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
     font-size: 1.35rem;
@@ -84,11 +80,27 @@ export const ModalTitle = styled.h2`
   }
 `;
 
+export const ModalBody = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 -0.5rem;
+  padding: 0 0.5rem;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
 export const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
+  flex-shrink: 0;
 
   @media (max-width: 480px) {
     flex-direction: column;

@@ -12,6 +12,7 @@ import citizenService from "../../../services/citizenService";
 import superAdminService from "../../../services/superAdminService";
 import toast from "../../../utils/toast";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
+import { customReactSelectStyles } from "../../../styles/reactSelectStyles";
 
 import {
   FormGroup,
@@ -54,6 +55,80 @@ const ReportIssue = () => {
   const watchedLocation = watch("location");
   const watchedLat = watch("lat");
   const watchedLng = watch("lng");
+  const watchedDepartment = watch("department");
+
+  // Department to categories mapping
+  const departmentCategories = {
+    "Animal Control & Stray Management": [
+      { value: "stray_animals", label: "Stray Animals" },
+      { value: "animal_rescue", label: "Animal Rescue" },
+      { value: "animal_nuisance", label: "Animal Nuisance" },
+      { value: "animal_relocation", label: "Animal Relocation" },
+    ],
+    "Traffic & Road Safety Coordination": [
+      { value: "traffic_signal", label: "Traffic Signal" },
+      { value: "road_sign", label: "Road Sign" },
+      { value: "unsafe_crossing", label: "Unsafe Crossing" },
+      { value: "traffic_hazard", label: "Traffic Hazard" },
+    ],
+    "Parks & Public Spaces Maintenance": [
+      { value: "park_maintenance", label: "Park Maintenance" },
+      { value: "park_security", label: "Park Security" },
+      { value: "broken_equipment", label: "Broken Equipment" },
+      { value: "park_cleanliness", label: "Park Cleanliness" },
+    ],
+    "Public Health & Vector Control": [
+      { value: "vector_control", label: "Vector Control" },
+      { value: "disease_prevention", label: "Disease Prevention" },
+      { value: "fogging_request", label: "Fogging Request" },
+      { value: "hygiene_risk", label: "Hygiene Risk" },
+    ],
+    "Sewerage & Sanitation": [
+      { value: "sewage_overflow", label: "Sewage Overflow" },
+      { value: "sewer_blockage", label: "Sewer Blockage" },
+      { value: "manhole_issue", label: "Manhole Issue" },
+      { value: "sanitation", label: "Sanitation" },
+    ],
+    "Water Supply & Distribution": [
+      { value: "water_supply", label: "Water Supply" },
+      { value: "pipeline_leak", label: "Pipeline Leak" },
+      { value: "low_pressure", label: "Low Pressure" },
+      { value: "water_quality", label: "Water Quality" },
+    ],
+    "Solid Waste Management": [
+      { value: "garbage_collection", label: "Garbage Collection" },
+      { value: "illegal_dumping", label: "Illegal Dumping" },
+      { value: "overflowing_bins", label: "Overflowing Bins" },
+      { value: "waste_transport", label: "Waste Transport" },
+    ],
+    "Street Lighting & Electrical": [
+      { value: "street_light", label: "Street Light" },
+      { value: "electrical_hazard", label: "Electrical Hazard" },
+      { value: "exposed_wiring", label: "Exposed Wiring" },
+      { value: "lighting_maintenance", label: "Lighting Maintenance" },
+    ],
+    "Drainage & Stormwater": [
+      { value: "drainage", label: "Drainage" },
+      { value: "waterlogging", label: "Waterlogging" },
+      { value: "blocked_drain", label: "Blocked Drain" },
+      { value: "flood_prevention", label: "Flood Prevention" },
+    ],
+    "Roads & Public Works": [
+      { value: "road_repair", label: "Road Repair" },
+      { value: "footpath_repair", label: "Footpath Repair" },
+      { value: "pothole", label: "Pothole" },
+      { value: "infrastructure_repair", label: "Infrastructure Repair" },
+    ],
+  };
+
+  // Get categories based on selected department
+  const getCategoryOptions = () => {
+    if (watchedDepartment?.label) {
+      return departmentCategories[watchedDepartment.label] || [];
+    }
+    // Return all categories if no department selected
+    return Object.values(departmentCategories).flat();
+  };
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -207,60 +282,11 @@ const ReportIssue = () => {
         {geolocationError && <ErrorText>{geolocationError}</ErrorText>}
 
         <FormGroup>
-          <Label>Issue Category *</Label>
-          <Controller
-            name="category"
-            control={control}
-            rules={{ required: "Category is required" }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={[
-                  { value: "road", label: "Road" },
-                  { value: "drainage", label: "Drainage" },
-                  { value: "street_light", label: "Street Light" },
-                  { value: "waste", label: "Waste Management" },
-                  { value: "water", label: "Water Supply" },
-                  { value: "other", label: "Other" },
-                ]}
-                placeholder="Select category..."
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    background: "rgba(255, 255, 255, 0.03)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "10px",
-                    padding: "0.1rem",
-                    backdropFilter: "blur(10px)",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    background: "rgba(30, 30, 30, 0.95)",
-                    backdropFilter: "blur(20px)",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    background: state.isFocused
-                      ? "rgba(102, 126, 234, 0.2)"
-                      : "transparent",
-                    color: "#fff",
-                  }),
-                  singleValue: (base) => ({ ...base, color: "#fff" }),
-                  input: (base) => ({ ...base, color: "#fff" }),
-                }}
-                menuPortalTarget={document.body}
-                menuPosition="fixed"
-              />
-            )}
-          />
-          {errors.category && <ErrorText>{errors.category.message}</ErrorText>}
-        </FormGroup>
-
-        <FormGroup>
-          <Label>Department</Label>
+          <Label>Department *</Label>
           <Controller
             name="department"
             control={control}
+            rules={{ required: "Department is required" }}
             render={({ field }) => (
               <Select
                 {...field}
@@ -269,36 +295,45 @@ const ReportIssue = () => {
                   label: dept.name,
                 }))}
                 placeholder="Select department..."
-                isClearable
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    background: "rgba(255, 255, 255, 0.03)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "10px",
-                    padding: "0.1rem",
-                    backdropFilter: "blur(10px)",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    background: "rgba(30, 30, 30, 0.95)",
-                    backdropFilter: "blur(20px)",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    background: state.isFocused
-                      ? "rgba(102, 126, 234, 0.2)"
-                      : "transparent",
-                    color: "#fff",
-                  }),
-                  singleValue: (base) => ({ ...base, color: "#fff" }),
-                  input: (base) => ({ ...base, color: "#fff" }),
+                onChange={(selected) => {
+                  field.onChange(selected);
+                  setValue("category", null); // Reset category when department changes
                 }}
+                styles={customReactSelectStyles}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                isDisabled={isSubmitting}
+              />
+            )}
+          />
+          {errors.department && (
+            <ErrorText>{errors.department.message}</ErrorText>
+          )}
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Issue Category *</Label>
+          <Controller
+            name="category"
+            control={control}
+            rules={{ required: "Category is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={getCategoryOptions()}
+                placeholder={
+                  watchedDepartment
+                    ? "Select category..."
+                    : "Select department first..."
+                }
+                isDisabled={!watchedDepartment || isSubmitting}
+                styles={customReactSelectStyles}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />
             )}
           />
+          {errors.category && <ErrorText>{errors.category.message}</ErrorText>}
         </FormGroup>
 
         <FormGroup>
@@ -317,32 +352,10 @@ const ReportIssue = () => {
                   { value: "critical", label: "Critical" },
                 ]}
                 placeholder="Select severity..."
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    background: "rgba(255, 255, 255, 0.03)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                    borderRadius: "10px",
-                    padding: "0.1rem",
-                    backdropFilter: "blur(10px)",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    background: "rgba(30, 30, 30, 0.95)",
-                    backdropFilter: "blur(20px)",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    background: state.isFocused
-                      ? "rgba(102, 126, 234, 0.2)"
-                      : "transparent",
-                    color: "#fff",
-                  }),
-                  singleValue: (base) => ({ ...base, color: "#fff" }),
-                  input: (base) => ({ ...base, color: "#fff" }),
-                }}
+                styles={customReactSelectStyles}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
+                isDisabled={isSubmitting}
               />
             )}
           />
@@ -354,6 +367,7 @@ const ReportIssue = () => {
             type="text"
             {...register("title", { required: "Title is required" })}
             placeholder="Brief title of the issue"
+            disabled={isSubmitting}
           />
           {errors.title && <ErrorText>{errors.title.message}</ErrorText>}
         </FormGroup>
@@ -366,6 +380,7 @@ const ReportIssue = () => {
             })}
             placeholder="Provide detailed description of the issue"
             rows="5"
+            disabled={isSubmitting}
           />
           {errors.description && (
             <ErrorText>{errors.description.message}</ErrorText>
@@ -388,6 +403,7 @@ const ReportIssue = () => {
               multiple
               accept="image/*"
               onChange={handleFileChange}
+              disabled={isSubmitting}
             />
           </FileInputWrapper>
           {selectedFiles.length > 5 && (
@@ -402,6 +418,7 @@ const ReportIssue = () => {
                   <RemoveImageButton
                     type="button"
                     onClick={() => removeImage(index)}
+                    disabled={isSubmitting}
                   >
                     &times;
                   </RemoveImageButton>
@@ -427,7 +444,7 @@ const ReportIssue = () => {
                   ]
                 : []
             }
-            onMapClick={handleMapClick}
+            onMapClick={isSubmitting ? undefined : handleMapClick}
           />
           <Input
             type="hidden"
@@ -441,7 +458,7 @@ const ReportIssue = () => {
             type="text"
             {...register("location", { required: "Location is required" })}
             placeholder="Click on map or enter coordinates (e.g., 34.0522, -118.2437)"
-            disabled={geolocationLoading}
+            disabled={geolocationLoading || isSubmitting}
           />
           {errors.location && <ErrorText>{errors.location.message}</ErrorText>}
         </FormGroup>
@@ -460,6 +477,7 @@ const ReportIssue = () => {
             type="button"
             variant="secondary"
             onClick={() => navigate("/dashboard")}
+            disabled={isSubmitting}
           >
             Cancel
           </Button>

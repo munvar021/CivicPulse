@@ -105,7 +105,11 @@ const ResolutionFeedback = () => {
                   <Star
                     key={star}
                     filled={star <= value}
-                    onClick={() => onChange(star)}
+                    onClick={() => {
+                      if (!isSubmitting) {
+                        onChange(star);
+                      }
+                    }}
                   >
                     ★
                   </Star>
@@ -127,6 +131,7 @@ const ResolutionFeedback = () => {
               {...field}
               placeholder="Share your experience with the resolution..."
               rows="5"
+              disabled={isSubmitting}
             />
           )}
         />
@@ -140,6 +145,7 @@ const ResolutionFeedback = () => {
             type="button"
             variant="danger"
             onClick={() => setIsConfirmModalOpen(true)}
+            disabled={isSubmitting}
           >
             Reopen Complaint
           </Button>
@@ -147,6 +153,7 @@ const ResolutionFeedback = () => {
             type="button"
             variant="secondary"
             onClick={() => navigate("/my-complaints")}
+            disabled={isSubmitting}
           >
             Cancel
           </Button>

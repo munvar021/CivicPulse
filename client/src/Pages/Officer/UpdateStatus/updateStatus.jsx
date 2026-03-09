@@ -154,6 +154,7 @@ const UpdateStatus = () => {
                 placeholder="Select status..."
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
+                isDisabled={loading}
               />
             )}
           />
@@ -179,6 +180,7 @@ const UpdateStatus = () => {
                 {...field}
                 placeholder="Add remarks about current progress or issues..."
                 rows="5"
+                disabled={loading}
               />
             )}
           />
@@ -204,6 +206,7 @@ const UpdateStatus = () => {
               accept="image/*"
               multiple
               onChange={handleImageChange}
+              disabled={loading}
             />
           </FileInputWrapper>
           {images.length > 0 && (
@@ -211,7 +214,11 @@ const UpdateStatus = () => {
               {images.map((img, index) => (
                 <ImagePreview key={index}>
                   <img src={img.preview} alt={`Preview ${index + 1}`} />
-                  <RemoveImageButton onClick={() => removeImage(index)}>
+                  <RemoveImageButton
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    disabled={loading}
+                  >
                     ×
                   </RemoveImageButton>
                 </ImagePreview>
@@ -227,6 +234,7 @@ const UpdateStatus = () => {
           <CancelButton
             type="button"
             onClick={() => navigate(`/officer/task/${id}`)}
+            disabled={loading}
           >
             Cancel
           </CancelButton>

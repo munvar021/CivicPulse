@@ -111,19 +111,31 @@ export const InfoGrid = styled.div`
   margin-bottom: 2rem;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
     gap: 1.25rem;
     margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
   }
 `;
 
 export const InfoItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1rem;
+  align-items: center;
 
-  & > *:last-child {
-    width: fit-content;
+  @media (max-width: 768px) {
+    grid-template-columns: 90px 1fr;
+    gap: 0.875rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 80px 1fr;
+    gap: 0.75rem;
   }
 `;
 
@@ -134,9 +146,14 @@ export const Label = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 0.875rem;
+  }
 
   @media (max-width: 480px) {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 `;
 
@@ -144,10 +161,14 @@ export const Value = styled.div`
   font-size: 1rem;
   color: ${theme.colors.text.primary};
   font-weight: 500;
-  width: fit-content;
+  word-break: break-word;
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
 
   @media (max-width: 480px) {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -201,10 +222,12 @@ export const ImageGrid = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
   }
 
   @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
 `;
 

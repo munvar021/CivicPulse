@@ -115,13 +115,9 @@ export const ProfileInfo = styled.div`
   margin-bottom: 1.5rem;
   align-items: center;
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-
   @media (max-width: 480px) {
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
     margin-bottom: 1rem;
   }
 `;

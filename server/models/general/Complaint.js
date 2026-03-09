@@ -193,7 +193,7 @@ complaintSchema.pre('save', function(next) {
     this.timeline = [{
       eventType: 'submitted',
       status: this.status,
-      description: 'Road damaged near bus stop',
+      description: this.description,
       updatedByModel: 'Citizen',
       date: this.createdAt || new Date()
     }];

@@ -7,6 +7,7 @@ import Button from "../../Button/button";
 import Loader from "../../Loaders/loader";
 import {
   PageContainer,
+  LoaderContainer,
   PageTitle,
   FilterBar,
   StatsGrid,
@@ -88,7 +89,9 @@ const ReportsLayout = ({
       <>
         <RoleHeader />
         <PageContainer>
-          <Loader size="large" />
+          <LoaderContainer>
+            <Loader size="large" />
+          </LoaderContainer>
         </PageContainer>
       </>
     );

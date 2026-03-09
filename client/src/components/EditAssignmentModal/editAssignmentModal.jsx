@@ -56,7 +56,7 @@ const EditAssignmentModal = ({
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <ModalTitle>Edit Assignment</ModalTitle>
-          <CloseButton onClick={onClose}>
+          <CloseButton onClick={onClose} disabled={isLoading}>
             <FontAwesomeIcon icon={faTimes} />
           </CloseButton>
         </ModalHeader>
@@ -79,6 +79,7 @@ const EditAssignmentModal = ({
                     menuPosition="fixed"
                     isSearchable
                     isClearable
+                    isDisabled={isLoading}
                   />
                 )}
               />
@@ -99,6 +100,7 @@ const EditAssignmentModal = ({
                     type="date"
                     min={getTodayDate()}
                     $hasError={!!errors.dueDate}
+                    disabled={isLoading}
                   />
                 )}
               />

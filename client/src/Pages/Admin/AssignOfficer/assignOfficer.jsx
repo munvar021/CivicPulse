@@ -7,6 +7,7 @@ import FormPageLayout from "../../../components/Layouts/FormPageLayout/formPageL
 import Button from "../../../components/Button/button";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
 import adminService from "../../../services/adminService";
+import { customReactSelectStyles } from "../../../styles/reactSelectStyles";
 import {
   FormGroup,
   Label,
@@ -89,29 +90,6 @@ const AssignOfficer = () => {
     { value: "critical", label: "Critical" },
   ];
 
-  const customSelectStyles = {
-    control: (base) => ({
-      ...base,
-      background: "rgba(255, 255, 255, 0.03)",
-      borderColor: "rgba(255, 255, 255, 0.1)",
-      borderRadius: "10px",
-      padding: "0.1rem",
-      backdropFilter: "blur(10px)",
-    }),
-    menu: (base) => ({
-      ...base,
-      background: "rgba(30, 30, 30, 0.95)",
-      backdropFilter: "blur(20px)",
-    }),
-    option: (base, state) => ({
-      ...base,
-      background: state.isFocused ? "rgba(102, 126, 234, 0.2)" : "transparent",
-      color: "#fff",
-    }),
-    singleValue: (base) => ({ ...base, color: "#fff" }),
-    input: (base) => ({ ...base, color: "#fff" }),
-  };
-
   return (
     <FormPageLayout
       title="Assign Officer to Complaint"
@@ -133,9 +111,10 @@ const AssignOfficer = () => {
                   label: `${officer.name} - ${officer.email}`,
                 }))}
                 placeholder="Select officer..."
-                styles={customSelectStyles}
+                styles={customReactSelectStyles}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
+                isDisabled={submitting}
               />
             )}
           />
@@ -153,9 +132,10 @@ const AssignOfficer = () => {
                 {...field}
                 options={priorityOptions}
                 placeholder="Select priority..."
-                styles={customSelectStyles}
+                styles={customReactSelectStyles}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
+                isDisabled={submitting}
               />
             )}
           />
@@ -167,6 +147,7 @@ const AssignOfficer = () => {
           <Input
             type="date"
             {...register("dueDate", { required: "Due date is required" })}
+            disabled={submitting}
           />
           {errors.dueDate && <ErrorText>{errors.dueDate.message}</ErrorText>}
         </FormGroup>
@@ -177,6 +158,7 @@ const AssignOfficer = () => {
             {...register("instructions")}
             placeholder="Add any specific instructions or remarks"
             rows="4"
+            disabled={submitting}
           />
         </FormGroup>
 
@@ -188,6 +170,7 @@ const AssignOfficer = () => {
             type="button"
             variant="secondary"
             onClick={() => navigate(`/admin/complaint/${id}`)}
+            disabled={submitting}
           >
             Cancel
           </Button>

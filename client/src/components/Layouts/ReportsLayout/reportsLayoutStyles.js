@@ -5,6 +5,9 @@ export const PageContainer = styled.div`
   padding-top: 140px;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
   animation: fadeInUp 0.6s ease-out;
 
   @keyframes fadeInUp {
@@ -21,12 +24,22 @@ export const PageContainer = styled.div`
   @media (max-width: 768px) {
     padding: 1rem;
     padding-top: 120px;
+    min-height: calc(100vh - 120px);
   }
 
   @media (max-width: 480px) {
     padding: 1rem;
     padding-top: 110px;
+    min-height: calc(100vh - 110px);
   }
+`;
+
+export const LoaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 400px;
 `;
 
 export const PageTitle = styled.h1`

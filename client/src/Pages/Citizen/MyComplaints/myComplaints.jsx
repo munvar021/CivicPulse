@@ -25,7 +25,11 @@ import {
 const MyComplaints = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { list: complaints, loading, totalPages } = useSelector((state) => state.complaints);
+  const {
+    list: complaints,
+    loading,
+    totalPages,
+  } = useSelector((state) => state.complaints);
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
@@ -42,7 +46,13 @@ const MyComplaints = () => {
   ];
 
   useEffect(() => {
-    dispatch(fetchComplaints({ status: filter === "all" ? undefined : filter, page: currentPage }));
+    dispatch(
+      fetchComplaints({
+        status: filter === "all" ? undefined : filter,
+        page: currentPage,
+        role: "citizen",
+      }),
+    );
   }, [dispatch, filter, currentPage]);
 
   const handleFilterChange = (option) => {
@@ -65,7 +75,13 @@ const MyComplaints = () => {
       setIsDeleting(true);
       await citizenService.deleteComplaint(complaintToDelete._id);
       toast.success("Complaint deleted successfully");
-      dispatch(fetchComplaints({ status: filter === "all" ? undefined : filter, page: currentPage }));
+      dispatch(
+        fetchComplaints({
+          status: filter === "all" ? undefined : filter,
+          page: currentPage,
+          role: "citizen",
+        }),
+      );
       setIsConfirmModalOpen(false);
       setComplaintToDelete(null);
     } catch (err) {

@@ -81,7 +81,7 @@ const AssignmentModal = ({
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
           <ModalTitle>{getTitle()}</ModalTitle>
-          <CloseButton onClick={onClose}>
+          <CloseButton onClick={onClose} disabled={isLoading}>
             <FontAwesomeIcon icon={faTimes} />
           </CloseButton>
         </ModalHeader>
@@ -104,6 +104,7 @@ const AssignmentModal = ({
                     menuPosition="fixed"
                     isSearchable
                     isClearable
+                    isDisabled={isLoading}
                   />
                 )}
               />
@@ -124,6 +125,7 @@ const AssignmentModal = ({
                     type="date"
                     min={getTodayDate()}
                     $hasError={!!errors.dueDate}
+                    disabled={isLoading}
                   />
                 )}
               />
@@ -151,6 +153,7 @@ const AssignmentModal = ({
                       placeholder="Explain why you're reassigning this complaint..."
                       rows={4}
                       $hasError={!!errors.reason}
+                      disabled={isLoading}
                     />
                   )}
                 />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import RoleHeader from "../../../components/Headers/roleHeader";
@@ -44,10 +44,41 @@ const UserManagement = () => {
   const formRef = React.useRef();
   const { user: authUser } = useAuth();
 
+  const formDefaultValues = useMemo(
+    () =>
+      editingUser
+        ? {
+            ...editingUser,
+            password: "",
+            department: editingUser.department
+              ? {
+                  value: editingUser.department._id,
+                  label: editingUser.department.name,
+                }
+              : null,
+            zone: editingUser.zone
+              ? {
+                  value: editingUser.zone._id,
+                  label: editingUser.zone.name,
+                }
+              : null,
+          }
+        : {
+            name: "",
+            email: "",
+            password: "",
+            phone: "",
+            role: "citizen",
+            department: null,
+            zone: null,
+          },
+    [editingUser],
+  );
+
   const roleOptions = [
     { value: "citizen", label: "Citizens", hasSecondaryFilter: false },
-    { value: "admin", label: "Admins", hasSecondaryFilter: true },
     { value: "officer", label: "Officers", hasSecondaryFilter: true },
+    { value: "admin", label: "Admins", hasSecondaryFilter: true },
   ];
 
   useEffect(() => {
@@ -143,12 +174,20 @@ const UserManagement = () => {
       const { data: savedUser } = await promise;
 
       if (editingUser) {
-        setUsers(
-          users.map((user) => (user._id === savedUser._id ? savedUser : user)),
-        );
+        if (savedUser.role === filterRole) {
+          setUsers(
+            users.map((user) =>
+              user._id === savedUser._id ? savedUser : user,
+            ),
+          );
+        } else {
+          setUsers(users.filter((user) => user._id !== savedUser._id));
+        }
         toast.success("User updated successfully");
       } else {
-        setUsers([...users, savedUser]);
+        if (savedUser.role === filterRole) {
+          setUsers([savedUser, ...users]);
+        }
         toast.success("User created successfully");
       }
 
@@ -158,6 +197,13 @@ const UserManagement = () => {
       toast.error(err.response?.data?.message || "Failed to save user");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    if (!isSaving) {
+      setIsModalOpen(false);
+      setEditingUser(null);
     }
   };
 
@@ -277,10 +323,7 @@ const UserManagement = () => {
         {isModalOpen && (
           <Modal
             title={editingUser ? "Edit User" : "Add User"}
-            onClose={() => {
-              setIsModalOpen(false);
-              setEditingUser(null);
-            }}
+            onClose={handleModalClose}
             onSave={() =>
               formRef.current.dispatchEvent(
                 new Event("submit", { cancelable: true, bubbles: true }),
@@ -291,36 +334,10 @@ const UserManagement = () => {
             <UserForm
               ref={formRef}
               onSubmit={handleSave}
-              defaultValues={
-                editingUser
-                  ? {
-                      ...editingUser,
-                      password: "",
-                      department: editingUser.department
-                        ? {
-                            value: editingUser.department._id,
-                            label: editingUser.department.name,
-                          }
-                        : null,
-                      zone: editingUser.zone
-                        ? {
-                            value: editingUser.zone._id,
-                            label: editingUser.zone.name,
-                          }
-                        : null,
-                    }
-                  : {
-                      name: "",
-                      email: "",
-                      password: "",
-                      phone: "",
-                      role: "citizen",
-                      department: null,
-                      zone: null,
-                    }
-              }
+              defaultValues={formDefaultValues}
               departments={departments}
               zones={zones}
+              isSubmitting={isSaving}
             />
           </Modal>
         )}

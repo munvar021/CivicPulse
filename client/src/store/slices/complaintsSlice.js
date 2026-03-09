@@ -1,26 +1,39 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../../services/api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { api } from "../../services/api";
 
 export const fetchComplaints = createAsyncThunk(
-  'complaints/fetchComplaints',
-  async (filters = {}, { rejectWithValue }) => {
+  "complaints/fetchComplaints",
+  async (filters = {}, { rejectWithValue, getState }) => {
     try {
       const params = new URLSearchParams();
-      if (filters.status && filters.status !== 'all') params.append('status', filters.status);
-      if (filters.priority && filters.priority !== 'all') params.append('priority', filters.priority);
-      if (filters.department && filters.department !== 'all') params.append('department', filters.department);
-      if (filters.page) params.append('page', filters.page);
-      
-      const { data } = await api.get(`/complaints?${params.toString()}`);
+      if (filters.status && filters.status !== "all")
+        params.append("status", filters.status);
+      if (filters.priority && filters.priority !== "all")
+        params.append("priority", filters.priority);
+      if (filters.department && filters.department !== "all")
+        params.append("department", filters.department);
+      if (filters.page) params.append("page", filters.page);
+
+      // Determine endpoint based on user role
+      const userRole = filters.role || getState().auth?.user?.role;
+      let endpoint = "/complaints/my"; // Default for citizens
+
+      if (userRole === "admin") {
+        endpoint = "/admin/complaints";
+      } else if (userRole === "superAdmin") {
+        endpoint = "/complaints";
+      }
+
+      const { data } = await api.get(`${endpoint}?${params.toString()}`);
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 export const fetchComplaintById = createAsyncThunk(
-  'complaints/fetchComplaintById',
+  "complaints/fetchComplaintById",
   async (id, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/complaints/${id}`);
@@ -28,11 +41,11 @@ export const fetchComplaintById = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 const complaintsSlice = createSlice({
-  name: 'complaints',
+  name: "complaints",
   initialState: {
     list: [],
     currentComplaint: null,

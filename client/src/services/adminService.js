@@ -125,7 +125,16 @@ const verifyComplaint = async (id) => {
   return response.data;
 };
 
+const getDashboardData = async () => {
+  const [stats, recentComplaints] = await Promise.all([
+    getAdminDashboardStats(),
+    getRecentComplaints(),
+  ]);
+  return { stats, recentComplaints };
+};
+
 const adminService = {
+  getDashboardData,
   getAdminDashboardStats,
   getRecentComplaints,
   getComplaints,

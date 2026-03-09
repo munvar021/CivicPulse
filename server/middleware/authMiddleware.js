@@ -19,7 +19,7 @@ const protect = asyncHandler(async (req, res, next) => {
   const bearerToken = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
     : null;
-  const token = cookieToken || bearerToken;
+  const token = bearerToken || cookieToken;
 
   if (!token) {
     res.status(401);

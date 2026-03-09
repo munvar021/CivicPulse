@@ -17,7 +17,17 @@ import {
 } from "./userFormStyles";
 
 const UserForm = forwardRef(
-  ({ onSubmit, defaultValues, departments, zones, isOfficerForm }, ref) => {
+  (
+    {
+      onSubmit,
+      defaultValues,
+      departments,
+      zones,
+      isOfficerForm,
+      isSubmitting = false,
+    },
+    ref,
+  ) => {
     const {
       register,
       handleSubmit,
@@ -49,6 +59,7 @@ const UserForm = forwardRef(
           <Input
             {...register("name", { required: "Name is required" })}
             placeholder="John Doe"
+            disabled={isSubmitting}
           />
           {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
         </InputGroup>
@@ -63,8 +74,18 @@ const UserForm = forwardRef(
               },
             })}
             placeholder="john.doe@example.com"
+            disabled={isSubmitting}
           />
           {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
+        </InputGroup>
+        <InputGroup>
+          <Label>Phone</Label>
+          <Input
+            {...register("phone", { required: "Phone is required" })}
+            placeholder="123-456-7890"
+            disabled={isSubmitting}
+          />
+          {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
         </InputGroup>
         <InputGroup>
           <Label>Password</Label>
@@ -89,10 +110,12 @@ const UserForm = forwardRef(
                   ? "Leave blank to keep same password"
                   : "Enter password"
               }
+              disabled={isSubmitting}
             />
             <PasswordToggle
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              disabled={isSubmitting}
             >
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </PasswordToggle>
@@ -100,14 +123,6 @@ const UserForm = forwardRef(
           {errors.password && (
             <ErrorMessage>{errors.password.message}</ErrorMessage>
           )}
-        </InputGroup>
-        <InputGroup>
-          <Label>Phone</Label>
-          <Input
-            {...register("phone", { required: "Phone is required" })}
-            placeholder="123-456-7890"
-          />
-          {errors.phone && <ErrorMessage>{errors.phone.message}</ErrorMessage>}
         </InputGroup>
 
         {!isOfficerForm && (
@@ -146,6 +161,9 @@ const UserForm = forwardRef(
                     }
                     styles={customReactSelectStyles}
                     placeholder="Select Role"
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isDisabled={isSubmitting}
                   />
                 )}
               />
@@ -177,6 +195,9 @@ const UserForm = forwardRef(
                     )}
                     placeholder="Select Department"
                     styles={customReactSelectStyles}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isDisabled={isSubmitting}
                   />
                 )}
               />
@@ -202,6 +223,9 @@ const UserForm = forwardRef(
                     placeholder="Select Zone (Optional)"
                     styles={customReactSelectStyles}
                     isClearable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    isDisabled={isSubmitting}
                   />
                 )}
               />

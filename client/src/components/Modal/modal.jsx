@@ -1,8 +1,10 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import {
   ModalOverlay,
   ModalContent,
   ModalTitle,
+  ModalBody,
   ButtonGroup,
 } from "./modalStyles";
 import { StyledButton } from "../Button/buttonStyles";
@@ -16,11 +18,17 @@ const Modal = ({
   saveLabel = "Save",
   isLoading = false,
 }) => {
-  return (
-    <ModalOverlay onClick={onClose}>
+  const handleOverlayClick = () => {
+    if (!isLoading) {
+      onClose();
+    }
+  };
+
+  return ReactDOM.createPortal(
+    <ModalOverlay onClick={handleOverlayClick}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalTitle>{title}</ModalTitle>
-        {children}
+        <ModalBody>{children}</ModalBody>
         <ButtonGroup>
           <StyledButton onClick={onSave} disabled={isLoading}>
             {isLoading ? <ButtonLoader size="small" /> : saveLabel}
@@ -34,7 +42,8 @@ const Modal = ({
           </StyledButton>
         </ButtonGroup>
       </ModalContent>
-    </ModalOverlay>
+    </ModalOverlay>,
+    document.body,
   );
 };
 

@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Header from "../../components/Headers/header";
 import { useScrollAnimation } from "../../hooks/useScrollAnimation";
-import { featuresData } from "../../Data/Home/homeData";
+import { featuresData } from "../../Data/homeData";
 import {
   HomeContainer,
   Hero,
@@ -104,7 +104,11 @@ const Home = () => {
   const [faqRef, faqVisible] = useScrollAnimation();
   const [ctaRef, ctaVisible] = useScrollAnimation();
 
-  const navItems = [{ path: "/login", label: "Login" }];
+  const navItems = [
+    { path: "/about", label: "About" },
+    { path: "/contact", label: "Contact" },
+    { path: "/login", label: "Login" },
+  ];
 
   return (
     <HomeContainer>
@@ -456,8 +460,12 @@ const Home = () => {
                 Register as Citizen
               </FooterLink>
               <FooterLink onClick={() => navigate("/login")}>Login</FooterLink>
-              <FooterLink>About Us</FooterLink>
-              <FooterLink>Contact</FooterLink>
+              <FooterLink onClick={() => navigate("/about")}>
+                About Us
+              </FooterLink>
+              <FooterLink onClick={() => navigate("/contact")}>
+                Contact
+              </FooterLink>
             </FooterLinks>
           </FooterSection>
           <FooterSection>

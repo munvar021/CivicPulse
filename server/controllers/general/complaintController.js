@@ -133,6 +133,7 @@ const getNearbyComplaints = asyncHandler(async (req, res) => {
   })
     .populate('citizen', 'name email')
     .populate('department', 'name')
+    .sort({ createdAt: -1 })
     .lean();
 
   res.json(complaints);
@@ -238,8 +239,14 @@ const updateComplaint = asyncHandler(async (req, res) => {
   const { title, description, severity, removedImages } = req.body;
 
   complaint.title = title || complaint.title;
+  const oldDescription = complaint.description;
   complaint.description = description || complaint.description;
   complaint.severity = severity || complaint.severity;
+
+  // Update timeline description if description changed
+  if (description && description !== oldDescription && complaint.timeline[0]?.eventType === 'submitted') {
+    complaint.timeline[0].description = description;
+  }
 
   if (removedImages) {
     const removedImagesArray = typeof removedImages === 'string' ? JSON.parse(removedImages) : removedImages;

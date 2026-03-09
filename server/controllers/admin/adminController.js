@@ -199,7 +199,7 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
   const departmentId = req.user.department;
   const now = new Date();
 
-  const [pending, reassigned, inProgress, resolved, delayed] =
+  const [pending, reassigned, inProgress, resolved, delayed, recentComplaints] =
     await Promise.all([
       Complaint.countDocuments({ department: departmentId, status: "pending" }),
       Complaint.countDocuments({
@@ -219,9 +219,15 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
         status: { $nin: ["resolved", "closed"] },
         dueDate: { $lt: now },
       }),
+      Complaint.find({ department: departmentId })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate("citizen", "name")
+        .select("title description status priority createdAt")
+        .lean(),
     ]);
 
-  res.json({ pending, reassigned, inProgress, resolved, delayed });
+  res.json({ stats: { pending, reassigned, inProgress, resolved, delayed }, recentComplaints });
 });
 
 const getRecentComplaints = asyncHandler(async (req, res) => {

@@ -41,6 +41,11 @@ export const Input = styled.input`
   &::placeholder {
     color: rgba(255, 255, 255, 0.4);
   }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 `;
 
 export const PasswordWrapper = styled.div`
@@ -65,6 +70,11 @@ export const PasswordToggle = styled.button`
 
   &:hover {
     color: ${theme.colors.text.primary};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
   }
 
   svg {

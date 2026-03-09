@@ -35,7 +35,7 @@ const getOfficerDashboardData = asyncHandler(async (req, res) => {
     throw new Error("Officer profile not found");
   }
 
-  const [total, inProgress, completed, blocked] = await Promise.all([
+  const [total, inProgress, completed, blocked, activeTasks] = await Promise.all([
     Complaint.countDocuments({ assignedTo: officerProfile._id }),
     Complaint.countDocuments({
       assignedTo: officerProfile._id,
@@ -49,9 +49,18 @@ const getOfficerDashboardData = asyncHandler(async (req, res) => {
       assignedTo: officerProfile._id,
       status: "blocked",
     }),
+    Complaint.find({
+      assignedTo: officerProfile._id,
+      status: { $in: ["assigned", "reassigned", "in_progress"] },
+    })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("department", "name")
+      .select("title department location status severity createdAt dueDate")
+      .lean(),
   ]);
 
-  res.json({ total, inProgress, completed, blocked });
+  res.json({ stats: { total, inProgress, completed, blocked }, activeTasks });
 });
 
 const getOfficerActiveTasks = asyncHandler(async (req, res) => {

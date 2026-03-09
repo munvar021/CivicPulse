@@ -1,11 +1,12 @@
 const express = require("express");
+const path = require("path");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 require("./config/cloudinary");
 

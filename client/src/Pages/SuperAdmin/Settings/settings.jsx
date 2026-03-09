@@ -67,9 +67,11 @@ const Settings = () => {
   };
 
   const closeCategoryModal = () => {
-    setCategoryModalOpen(false);
-    setCurrentCategory(null);
-    setNewCategoryName("");
+    if (!isSaving) {
+      setCategoryModalOpen(false);
+      setCurrentCategory(null);
+      setNewCategoryName("");
+    }
   };
 
   const handleSaveCategory = async () => {
@@ -120,7 +122,9 @@ const Settings = () => {
   };
 
   const closeTimelineModal = () => {
-    setTimelineModalOpen(false);
+    if (!isSaving) {
+      setTimelineModalOpen(false);
+    }
   };
 
   const handleSaveTimelines = async () => {
@@ -217,6 +221,7 @@ const Settings = () => {
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="Enter category name"
+              disabled={isSaving}
             />
           </ModalInputGroup>
         </Modal>
@@ -241,6 +246,7 @@ const Settings = () => {
                 })
               }
               placeholder="Enter hours"
+              disabled={isSaving}
             />
           </ModalInputGroup>
           <ModalInputGroup>
@@ -255,6 +261,7 @@ const Settings = () => {
                 })
               }
               placeholder="Enter hours"
+              disabled={isSaving}
             />
           </ModalInputGroup>
           <ModalInputGroup>
@@ -269,6 +276,7 @@ const Settings = () => {
                 })
               }
               placeholder="Enter hours"
+              disabled={isSaving}
             />
           </ModalInputGroup>
         </Modal>

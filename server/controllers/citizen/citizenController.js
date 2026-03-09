@@ -146,59 +146,10 @@ const getCitizenDashboardData = asyncHandler(async (req, res) => {
   });
 });
 
-const getMyComplaints = asyncHandler(async (req, res) => {
-  const citizen = await Citizen.findOne({ email: req.user.email })
-    .select("_id")
-    .lean();
-
-  if (!citizen) {
-    res.status(404);
-    throw new Error("Citizen not found");
-  }
-
-  const { status, page = 1, limit = 20 } = req.query;
-  const query = { citizen: citizen._id };
-
-  if (
-    status &&
-    [
-      "pending",
-      "assigned",
-      "in_progress",
-      "resolved",
-      "closed",
-      "rejected",
-    ].includes(status)
-  ) {
-    query.status = status;
-  }
-
-  const skip = (page - 1) * limit;
-
-  const [complaints, total] = await Promise.all([
-    Complaint.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit))
-      .populate("department", "name")
-      .populate("assignedTo", "name")
-      .lean(),
-    Complaint.countDocuments(query),
-  ]);
-
-  res.json({
-    complaints,
-    currentPage: parseInt(page),
-    totalPages: Math.ceil(total / limit),
-    total,
-  });
-});
-
 module.exports = {
   registerCitizen,
   loginCitizen,
   getCitizenProfile,
   updateCitizenProfile,
   getCitizenDashboardData,
-  getMyComplaints,
 };

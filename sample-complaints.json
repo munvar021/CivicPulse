@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Stray dogs near school area",
+    "description": "Pack of 5-6 stray dogs roaming near Government Primary School, posing threat to children",
+    "department": "Animal Control & Stray Management",
+    "category": "Stray Animals",
+    "priority": "high",
+    "location": {
+      "address": "MG Road, Near Govt Primary School",
+      "coordinates": { "lat": 12.9716, "lng": 77.5946 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Traffic signal not working",
+    "description": "Traffic light at main junction has been non-functional for 3 days causing accidents",
+    "department": "Traffic & Road Safety Coordination",
+    "category": "Traffic Signal",
+    "priority": "critical",
+    "location": {
+      "address": "Brigade Road Junction",
+      "coordinates": { "lat": 12.9698, "lng": 77.6025 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Broken benches in park",
+    "description": "Multiple benches broken and play equipment damaged in community park",
+    "department": "Parks & Public Spaces Maintenance",
+    "category": "Park Maintenance",
+    "priority": "medium",
+    "location": {
+      "address": "Cubbon Park, South Gate",
+      "coordinates": { "lat": 12.9762, "lng": 77.5929 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Mosquito breeding near residential area",
+    "description": "Stagnant water accumulation causing severe mosquito problem affecting 50+ families",
+    "department": "Public Health & Vector Control",
+    "category": "Vector Control",
+    "priority": "high",
+    "location": {
+      "address": "Jayanagar 4th Block",
+      "coordinates": { "lat": 12.9250, "lng": 77.5838 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Manhole overflow on main road",
+    "description": "Sewage overflowing from manhole creating unhygienic conditions and foul smell",
+    "department": "Sewerage & Sanitation",
+    "category": "Sewage Overflow",
+    "priority": "critical",
+    "location": {
+      "address": "Indiranagar 100 Feet Road",
+      "coordinates": { "lat": 12.9784, "lng": 77.6408 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "No water supply for 2 days",
+    "description": "Entire locality facing water shortage, pipeline leak suspected",
+    "department": "Water Supply & Distribution",
+    "category": "Water Supply",
+    "priority": "critical",
+    "location": {
+      "address": "Koramangala 5th Block",
+      "coordinates": { "lat": 12.9352, "lng": 77.6193 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Garbage not collected for 5 days",
+    "description": "Waste accumulation causing health hazard and attracting stray animals",
+    "department": "Solid Waste Management",
+    "category": "Garbage Collection",
+    "priority": "high",
+    "location": {
+      "address": "Malleshwaram 8th Cross",
+      "coordinates": { "lat": 13.0067, "lng": 77.5703 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Street lights not working",
+    "description": "Entire street in darkness for past week, safety concern for residents",
+    "department": "Street Lighting & Electrical",
+    "category": "Street Light",
+    "priority": "high",
+    "location": {
+      "address": "HSR Layout Sector 2",
+      "coordinates": { "lat": 12.9116, "lng": 77.6473 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Blocked storm drain causing flooding",
+    "description": "Drain completely blocked, water logging during rain affecting 20+ houses",
+    "department": "Drainage & Stormwater",
+    "category": "Blocked Drain",
+    "priority": "high",
+    "location": {
+      "address": "Whitefield Main Road",
+      "coordinates": { "lat": 12.9698, "lng": 77.7499 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Large pothole on highway",
+    "description": "Deep pothole causing vehicle damage and accidents, needs immediate repair",
+    "department": "Roads & Public Works",
+    "category": "Road Repair",
+    "priority": "critical",
+    "location": {
+      "address": "Outer Ring Road, Near Marathahalli",
+      "coordinates": { "lat": 12.9591, "lng": 77.6974 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Injured stray dog needs rescue",
+    "description": "Dog with broken leg unable to move, needs immediate medical attention",
+    "department": "Animal Control & Stray Management",
+    "category": "Animal Rescue",
+    "priority": "medium",
+    "location": {
+      "address": "Richmond Road",
+      "coordinates": { "lat": 12.9634, "lng": 77.6009 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Missing road sign at intersection",
+    "description": "Stop sign missing causing confusion and near-miss accidents",
+    "department": "Traffic & Road Safety Coordination",
+    "category": "Road Sign",
+    "priority": "high",
+    "location": {
+      "address": "Bannerghatta Road Junction",
+      "coordinates": { "lat": 12.8996, "lng": 77.5977 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Park gate broken and vandalized",
+    "description": "Main entrance gate damaged, allowing unauthorized vehicle entry",
+    "department": "Parks & Public Spaces Maintenance",
+    "category": "Park Security",
+    "priority": "medium",
+    "location": {
+      "address": "Lalbagh Botanical Garden, West Gate",
+      "coordinates": { "lat": 12.9507, "lng": 77.5848 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Fogging required in residential area",
+    "description": "Dengue cases reported, urgent fogging needed for disease prevention",
+    "department": "Public Health & Vector Control",
+    "category": "Disease Prevention",
+    "priority": "critical",
+    "location": {
+      "address": "BTM Layout 2nd Stage",
+      "coordinates": { "lat": 12.9165, "lng": 77.6101 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Sewer blockage in residential complex",
+    "description": "Entire apartment complex facing sewage backup in bathrooms",
+    "department": "Sewerage & Sanitation",
+    "category": "Sewer Blockage",
+    "priority": "critical",
+    "location": {
+      "address": "Electronic City Phase 1",
+      "coordinates": { "lat": 12.8456, "lng": 77.6603 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Water pipeline leak wasting water",
+    "description": "Major leak on main pipeline, thousands of liters wasted daily",
+    "department": "Water Supply & Distribution",
+    "category": "Pipeline Leak",
+    "priority": "high",
+    "location": {
+      "address": "JP Nagar 7th Phase",
+      "coordinates": { "lat": 12.8951, "lng": 77.5784 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Illegal dumping site near lake",
+    "description": "Construction waste being dumped illegally, polluting lake water",
+    "department": "Solid Waste Management",
+    "category": "Illegal Dumping",
+    "priority": "high",
+    "location": {
+      "address": "Bellandur Lake Road",
+      "coordinates": { "lat": 12.9260, "lng": 77.6738 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Exposed electrical wiring danger",
+    "description": "Live wires hanging low near bus stop, electrocution risk",
+    "department": "Street Lighting & Electrical",
+    "category": "Electrical Hazard",
+    "priority": "critical",
+    "location": {
+      "address": "Yeshwanthpur Bus Stand",
+      "coordinates": { "lat": 13.0280, "lng": 77.5385 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Waterlogging after rain",
+    "description": "Street floods completely during rain, drain cleaning required",
+    "department": "Drainage & Stormwater",
+    "category": "Waterlogging",
+    "priority": "medium",
+    "location": {
+      "address": "Ulsoor Lake Road",
+      "coordinates": { "lat": 12.9810, "lng": 77.6217 }
+    },
+    "status": "pending"
+  },
+  {
+    "title": "Damaged footpath causing accidents",
+    "description": "Broken footpath tiles and uneven surface causing pedestrian injuries",
+    "department": "Roads & Public Works",
+    "category": "Footpath Repair",
+    "priority": "medium",
+    "location": {
+      "address": "Commercial Street",
+      "coordinates": { "lat": 12.9817, "lng": 77.6082 }
+    },
+    "status": "pending"
+  }
+]

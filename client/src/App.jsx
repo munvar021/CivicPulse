@@ -5,6 +5,8 @@ import { GlobalStyles } from "./styles/GlobalStyles";
 import { initScrollReactiveLighting } from "./utils/scrollReactiveLighting";
 import ScrollToTop from "./components/ScrollToTop/scrollToTop";
 import Home from "./Pages/Home/home";
+import AboutUs from "./Pages/AboutUs/aboutUs";
+import Contact from "./Pages/Contact/contact";
 import RoleSelection from "./Pages/Auth/roleSelection";
 import CitizenLogin from "./Pages/Auth/Login/citizenLogin";
 import CitizenRegister from "./Pages/Auth/Register/citizenRegister";
@@ -46,6 +48,8 @@ const App = () => {
         <div className="App">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<RoleSelection />} />
             <Route path="/citizen/login" element={<CitizenLogin />} />
             <Route path="/citizen/register" element={<CitizenRegister />} />

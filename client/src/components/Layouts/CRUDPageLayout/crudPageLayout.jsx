@@ -55,15 +55,34 @@ const CRUDPageLayout = ({
 
   useEffect(() => {
     if (useRedux && reduxSlice) {
-      if (reduxSlice === 'departments') {
-        dispatch(fetchDepartments({ page: currentPage, search: searchTerm, ...filterValues }));
-      } else if (reduxSlice === 'zones') {
-        dispatch(fetchZones({ page: currentPage, search: searchTerm, ...filterValues }));
+      if (reduxSlice === "departments") {
+        dispatch(
+          fetchDepartments({
+            page: currentPage,
+            search: searchTerm,
+            ...filterValues,
+          }),
+        );
+      } else if (reduxSlice === "zones") {
+        dispatch(
+          fetchZones({
+            page: currentPage,
+            search: searchTerm,
+            ...filterValues,
+          }),
+        );
       }
     } else {
       fetchData();
     }
-  }, [currentPage, searchTerm, ...Object.values(filterValues), dispatch, useRedux, reduxSlice]);
+  }, [
+    currentPage,
+    searchTerm,
+    ...Object.values(filterValues),
+    dispatch,
+    useRedux,
+    reduxSlice,
+  ]);
 
   useEffect(() => {
     if (useRedux && reduxData) {
@@ -104,17 +123,17 @@ const CRUDPageLayout = ({
     try {
       setIsDeleting(true);
       await service.delete(itemToDelete._id);
-      
+
       if (useRedux && reduxSlice) {
-        if (reduxSlice === 'departments') {
+        if (reduxSlice === "departments") {
           dispatch(fetchDepartments({ page: currentPage, search: searchTerm }));
-        } else if (reduxSlice === 'zones') {
+        } else if (reduxSlice === "zones") {
           dispatch(fetchZones({ page: currentPage, search: searchTerm }));
         }
       } else {
         setData(data.filter((item) => item._id !== itemToDelete._id));
       }
-      
+
       toast.success("Deleted successfully");
       setIsConfirmModalOpen(false);
       setItemToDelete(null);
@@ -145,9 +164,9 @@ const CRUDPageLayout = ({
       const item = savedItem.data || savedItem;
 
       if (useRedux && reduxSlice) {
-        if (reduxSlice === 'departments') {
+        if (reduxSlice === "departments") {
           dispatch(fetchDepartments({ page: currentPage, search: searchTerm }));
-        } else if (reduxSlice === 'zones') {
+        } else if (reduxSlice === "zones") {
           dispatch(fetchZones({ page: currentPage, search: searchTerm }));
         }
       } else {
@@ -158,13 +177,22 @@ const CRUDPageLayout = ({
         }
       }
 
-      toast.success(editingItem ? "Updated successfully" : "Created successfully");
+      toast.success(
+        editingItem ? "Updated successfully" : "Created successfully",
+      );
       setIsModalOpen(false);
       setEditingItem(null);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to save");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    if (!isSaving) {
+      setIsModalOpen(false);
+      setEditingItem(null);
     }
   };
 
@@ -227,10 +255,7 @@ const CRUDPageLayout = ({
       {isModalOpen && (
         <Modal
           title={editingItem ? editTitle : addTitle}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingItem(null);
-          }}
+          onClose={handleModalClose}
           onSave={() =>
             formRef.current.dispatchEvent(
               new Event("submit", { cancelable: true, bubbles: true }),
@@ -242,6 +267,8 @@ const CRUDPageLayout = ({
             ref={formRef}
             onSubmit={handleSave}
             defaultValues={editingItem}
+            isSubmitting={isSaving}
+            isLoading={isSaving}
             {...formProps}
           />
         </Modal>

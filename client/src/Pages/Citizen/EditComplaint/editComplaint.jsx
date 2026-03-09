@@ -197,6 +197,7 @@ const EditComplaint = () => {
             type="text"
             {...register("title", { required: "Title is required" })}
             placeholder="Enter complaint title"
+            disabled={submitting}
           />
           {errors.title && <ErrorText>{errors.title.message}</ErrorText>}
         </FormGroup>
@@ -209,6 +210,7 @@ const EditComplaint = () => {
             })}
             placeholder="Describe the issue in detail"
             rows={6}
+            disabled={submitting}
           />
           {errors.description && (
             <ErrorText>{errors.description.message}</ErrorText>
@@ -228,6 +230,7 @@ const EditComplaint = () => {
                 styles={customSelectStyles}
                 placeholder="Select severity level"
                 isSearchable
+                isDisabled={submitting}
               />
             )}
           />
@@ -247,6 +250,7 @@ const EditComplaint = () => {
                     <RemoveImageButton
                       type="button"
                       onClick={() => removeExistingImage(index)}
+                      disabled={submitting}
                     >
                       ×
                     </RemoveImageButton>
@@ -267,6 +271,7 @@ const EditComplaint = () => {
               accept="image/*"
               multiple
               onChange={handleNewImageChange}
+              disabled={submitting}
             />
           </FileInputWrapper>
 
@@ -278,6 +283,7 @@ const EditComplaint = () => {
                   <RemoveImageButton
                     type="button"
                     onClick={() => removeNewImage(index)}
+                    disabled={submitting}
                   >
                     ×
                   </RemoveImageButton>
@@ -295,6 +301,7 @@ const EditComplaint = () => {
             variant="secondary"
             type="button"
             onClick={() => navigate(`/complaint/${id}`)}
+            disabled={submitting}
           >
             Cancel
           </Button>

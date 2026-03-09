@@ -119,6 +119,7 @@ const CompleteTask = () => {
                 {...field}
                 placeholder="Describe the work completed in detail..."
                 rows="5"
+                disabled={loading}
               />
             )}
           />
@@ -140,6 +141,7 @@ const CompleteTask = () => {
               accept="image/*"
               multiple
               onChange={handleImageChange}
+              disabled={loading}
             />
           </FileInputWrapper>
           <CompactInfoText>
@@ -150,7 +152,11 @@ const CompleteTask = () => {
               {images.map((img, index) => (
                 <ImagePreview key={index}>
                   <img src={img.preview} alt={`Proof ${index + 1}`} />
-                  <RemoveImageButton onClick={() => removeImage(index)}>
+                  <RemoveImageButton
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    disabled={loading}
+                  >
                     ×
                   </RemoveImageButton>
                 </ImagePreview>
@@ -166,6 +172,7 @@ const CompleteTask = () => {
           <CancelButton
             type="button"
             onClick={() => navigate(`/officer/task/${id}`)}
+            disabled={loading}
           >
             Cancel
           </CancelButton>

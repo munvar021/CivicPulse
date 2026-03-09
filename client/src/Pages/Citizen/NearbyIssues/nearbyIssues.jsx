@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import RoleHeader from "../../../components/Headers/roleHeader";
 import Map from "../../../components/Map/map";
 import Loader from "../../../components/Loaders/loader";
+import StatusBadge from "../../../components/StatusBadge/statusBadge";
+import PriorityBadge from "../../../components/PriorityBadge/priorityBadge";
 import { useAuth } from "../../../context/authContext";
 import citizenService from "../../../services/citizenService";
-import { getPriorityColor, getStatusColor } from "../../../utils/colorMapper";
 import {
   PageContainer,
   PageTitle,
@@ -14,8 +15,6 @@ import {
   TableHeader,
   TableRow,
   TableCell,
-  PriorityBadge,
-  StatusBadge,
   ActionButton,
   NoData,
   ErrorText,
@@ -140,14 +139,10 @@ const NearbyIssues = () => {
                   <TableCell>{issue.department?.name || "N/A"}</TableCell>
                   <TableCell>{issue.location?.address || "N/A"}</TableCell>
                   <TableCell>
-                    <StatusBadge color={getStatusColor(issue.status)}>
-                      {issue.status}
-                    </StatusBadge>
+                    <StatusBadge status={issue.status} variant="small" />
                   </TableCell>
                   <TableCell>
-                    <PriorityBadge color={getPriorityColor(issue.severity)}>
-                      {issue.severity}
-                    </PriorityBadge>
+                    <PriorityBadge severity={issue.severity} variant="small" />
                   </TableCell>
                   <TableCell>
                     {new Date(issue.createdAt).toLocaleDateString("en-GB")}
