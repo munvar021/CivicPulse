@@ -583,5 +583,5 @@ For support and questions:
 
 <div align="center">
   <p><strong>Built with ❤️ for better communities</strong></p>
-  <p>© 2024 CivicPulse. All rights reserved.</p>
+  <p>© 2026 CivicPulse. All rights reserved.</p>
 </div>
