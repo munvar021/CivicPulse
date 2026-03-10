@@ -1,13 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../services/api";
-
-const hasStoredToken = () => {
-  try {
-    return Boolean(localStorage.getItem("token"));
-  } catch {
-    return false;
-  }
-};
+import {
+  clearStoredToken,
+  hasStoredToken,
+  setStoredToken,
+} from "../../utils/authStorage";
 
 export const login = createAsyncThunk(
   "auth/login",
@@ -22,7 +19,7 @@ export const login = createAsyncThunk(
       const { data } = await api.post(loginPaths[role], { email, password });
 
       if (data.token) {
-        localStorage.setItem("token", data.token);
+        setStoredToken(data.token, role);
       }
 
       return data;
@@ -43,7 +40,7 @@ export const register = createAsyncThunk(
       const { data } = await api.post(registerPaths[role], userData);
 
       if (data.token) {
-        localStorage.setItem("token", data.token);
+        setStoredToken(data.token, role);
       }
 
       return data;
@@ -75,10 +72,10 @@ export const logout = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await api.post("/users/logout");
-      localStorage.removeItem("token");
+      clearStoredToken();
       return null;
     } catch (error) {
-      localStorage.removeItem("token");
+      clearStoredToken();
       return rejectWithValue(error.response?.data?.message);
     }
   },
@@ -147,7 +144,7 @@ const authSlice = createSlice({
         state.checkingAuth = false;
         state.currentAuthRequestId = null;
         if (action.payload?.status === 401 || action.payload?.status === 403) {
-          localStorage.removeItem("token");
+          clearStoredToken();
         }
       })
       .addCase(logout.fulfilled, (state) => {

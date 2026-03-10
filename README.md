@@ -52,28 +52,32 @@ A world where every citizen has a voice in their community's development and eve
 ### 🏠 **Citizen Portal**
 
 - 📍 **Location-Based Reporting**: Report issues with precise GPS coordinates
-- 📸 **Image Upload**: Attach photos for better issue documentation
+- 📸 **Image Upload**: Attach up to 5 photos for better issue documentation
 - 🔍 **Nearby Issues**: Discover and track community problems
-- 📊 **Progress Tracking**: Real-time status updates on submitted complaints
+- 📊 **Progress Tracking**: Real-time status updates with timeline
 - 💬 **Feedback System**: Rate and review completed work
 - 📱 **Mobile Responsive**: Seamless experience across all devices
 - 🔐 **Self-Registration**: Citizens can register independently with sequential ID (CZ-XXXXXX)
+- 🖼️ **Image Modal**: Click any image to view in full-screen modal with navigation
 
 ### 👮 **Field Officer Portal**
 
 - 📋 **Task Dashboard**: Prioritized task management interface
-- 🔄 **Status Updates**: Real-time progress reporting
-- 📷 **Proof of Work**: Upload completion evidence
+- 🔄 **Status Updates**: Real-time progress reporting with images
+- 📷 **Proof of Work**: Upload completion evidence (up to 5 images)
 - 📈 **Performance Analytics**: Track work history and statistics
 - 🎯 **Priority Management**: Focus on high-priority issues first
+- ⏰ **Due Date Tracking**: Monitor deadlines and overdue tasks
 
 ### 🏢 **Department Admin Portal**
 
 - 📊 **Analytics Dashboard**: Comprehensive performance metrics
 - 👥 **Officer Management**: Create and manage field officer accounts
-- 🎯 **Assignment System**: Intelligent task distribution
+- 🎯 **Assignment System**: Intelligent task distribution with due dates
 - 📈 **Reporting Tools**: Generate detailed performance reports
 - ⚠️ **Escalation Management**: Handle overdue and critical issues
+- ✅ **Verification**: Verify resolved complaints
+- 🔄 **Reassignment**: Reassign tasks with reason tracking
 
 ### 🔧 **Super Admin Portal**
 
@@ -81,9 +85,11 @@ A world where every citizen has a voice in their community's development and eve
 - 👤 **User Management**: Complete user lifecycle management
 - 🏛️ **Department Setup**: Configure departments and zones
 - ⚙️ **System Settings**: Global configuration management
-- 📊 **Global Reports**: Export system-wide data and insights
+- 📊 **Global Reports**: Export system-wide data and insights (CSV)
 - 🔐 **Secure Access**: Hidden portal with multi-layer security
 - 🔑 **Access Code Protection**: Requires secret code validation (frontend + backend)
+- 📍 **Zone Management**: Geographic zone configuration with GeoJSON
+- ✅ **Verification**: Verify resolved complaints
 
 ---
 
@@ -122,32 +128,34 @@ graph TB
 
 ### Frontend
 
-| Technology        | Version | Purpose             |
-| ----------------- | ------- | ------------------- |
-| React             | 18.2.0  | UI Framework        |
-| React Router      | 6.8.0   | Client-side routing |
-| Redux Toolkit     | 2.5.0   | State management    |
-| React Redux       | 9.2.0   | Redux bindings      |
-| React Hook Form   | 7.71.1  | Form management     |
-| Styled Components | 6.3.8   | CSS-in-JS styling   |
-| Axios             | 1.3.0   | HTTP client         |
-| Leaflet.js        | 1.9.3   | Interactive maps    |
-| Framer Motion     | 12.34.0 | Animations          |
-| React Toastify    | 11.0.5  | Notifications       |
-| React Select      | 5.8.0   | Enhanced dropdowns  |
-| Font Awesome      | 6.5.0   | Icon library        |
+| Technology        | Version | Purpose                      |
+| ----------------- | ------- | ---------------------------- |
+| React             | 18.2.0  | UI Framework                 |
+| React Router      | 6.8.0   | Client-side routing          |
+| Redux Toolkit     | 2.11.2  | State management             |
+| React Redux       | 9.2.0   | Redux bindings               |
+| React Hook Form   | 7.71.1  | Form management & validation |
+| Styled Components | 6.3.8   | CSS-in-JS styling            |
+| Axios             | 1.3.0   | HTTP client                  |
+| Leaflet.js        | 1.9.3   | Interactive maps             |
+| React Leaflet     | 4.2.0   | React bindings for Leaflet   |
+| Framer Motion     | 12.34.0 | Animations                   |
+| React Toastify    | 11.0.5  | Toast notifications          |
+| React Select      | 5.10.2  | Enhanced dropdowns           |
+| Font Awesome      | 7.1.0   | Icon library                 |
 
 ### Backend
 
-| Technology | Version | Purpose             |
-| ---------- | ------- | ------------------- |
-| Node.js    | 18.x    | Runtime environment |
-| Express.js | 4.18.0  | Web framework       |
-| MongoDB    | 6.x     | Database            |
-| Mongoose   | 7.0.0   | ODM                 |
-| JWT        | 9.0.0   | Authentication      |
-| Cloudinary | 1.35.0  | Image storage       |
-| Multer     | 1.4.5   | File upload         |
+| Technology    | Version | Purpose                  |
+| ------------- | ------- | ------------------------ |
+| Node.js       | 18.x    | Runtime environment      |
+| Express.js    | 4.18.2  | Web framework            |
+| MongoDB       | 8.0.4   | Database (Mongoose ODM)  |
+| JWT           | 9.0.2   | Authentication           |
+| Cloudinary    | 2.9.0   | Image storage & delivery |
+| Multer        | 2.0.2   | File upload middleware   |
+| Bcrypt.js     | 2.4.3   | Password hashing         |
+| CSV Stringify | 6.6.0   | CSV export functionality |
 
 ---
 
@@ -157,35 +165,128 @@ graph TB
 CivicPulse/
 ├── 📁 client/                 # React frontend application
 │   ├── 📁 public/            # Static assets
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   └── manifest.json
 │   ├── 📁 src/
 │   │   ├── 📁 components/    # Reusable UI components
+│   │   │   ├── AccessGate/      # SuperAdmin access code gate
+│   │   │   ├── Button/          # Reusable button component
+│   │   │   ├── Card/            # Card component
+│   │   │   ├── ConfirmationModal/ # Delete confirmation
+│   │   │   ├── EditAssignmentModal/ # Edit assignments
+│   │   │   ├── EditProfileModal/  # Profile editing
+│   │   │   ├── EmptyState/      # Empty state UI
+│   │   │   ├── Filter/          # Filtering component
+│   │   │   ├── Forms/           # Form components
+│   │   │   ├── Headers/         # Header & navigation
+│   │   │   ├── ImageModal/      # Full-screen image viewer
+│   │   │   ├── Layouts/         # Page layout components
+│   │   │   ├── Loaders/         # Loading indicators
+│   │   │   ├── Map/             # Leaflet map component
+│   │   │   ├── Modal/           # Generic modal
+│   │   │   ├── Pagination/      # Table pagination
+│   │   │   ├── PriorityBadge/   # Priority indicators
+│   │   │   ├── ProgressTimeline/ # Complaint timeline
+│   │   │   ├── ReassignModal/   # Reassignment modal
+│   │   │   ├── ScrollToTop/     # Scroll to top button
+│   │   │   ├── StatCard/        # Statistics cards
+│   │   │   ├── StatusBadge/     # Status indicators
+│   │   │   ├── Table/           # Data table component
+│   │   │   ├── Toast/           # Toast notifications
+│   │   │   └── UserForm/        # User creation forms
 │   │   ├── 📁 Pages/         # Application pages
+│   │   │   ├── AboutUs/         # About page
+│   │   │   ├── Admin/           # Admin portal pages
+│   │   │   ├── Auth/            # Authentication pages
+│   │   │   ├── Citizen/         # Citizen portal pages
+│   │   │   ├── Contact/         # Contact page
+│   │   │   ├── Home/            # Landing page
+│   │   │   ├── NotFound/        # 404 page
+│   │   │   ├── Officer/         # Officer portal pages
+│   │   │   ├── SuperAdmin/      # SuperAdmin portal pages
+│   │   │   └── Unauthorized/    # 401 page
 │   │   ├── 📁 services/      # API service layer
-│   │   ├── 📁 store/         # Redux store and slices
+│   │   │   ├── adminService.js
+│   │   │   ├── api.js           # Axios instance
+│   │   │   ├── citizenService.js
+│   │   │   ├── officerService.js
+│   │   │   └── superAdminService.js
+│   │   ├── 📁 store/         # Redux store
+│   │   │   ├── slices/          # Redux slices
+│   │   │   ├── hooks.js         # Redux hooks
+│   │   │   └── store.js         # Store configuration
 │   │   ├── 📁 styles/        # Styling system
+│   │   │   ├── animations.js    # Keyframe animations
+│   │   │   ├── glassUtilities.js # Glass morphism
+│   │   │   ├── GlobalStyles.js  # Global styles
+│   │   │   ├── liquidGlass.js   # Liquid glass effects
+│   │   │   ├── reactSelectStyles.js # Select styles
+│   │   │   └── theme.js         # Theme configuration
 │   │   ├── 📁 utils/         # Utility functions
+│   │   │   ├── authStorage.js   # Auth token storage
+│   │   │   ├── colorMapper.js   # Color utilities
+│   │   │   ├── dateFormatter.js # Date formatting
+│   │   │   ├── scrollReactiveLighting.js # Scroll effects
+│   │   │   └── toast.js         # Toast utilities
 │   │   ├── 📁 context/       # React contexts
-│   │   └── 📁 routes/        # Route configurations
-│   ├── 📄 package.json       # Frontend dependencies
-│   └── 📄 README.md          # Frontend documentation
+│   │   │   └── authContext.js   # Auth context
+│   │   ├── 📁 hooks/         # Custom hooks
+│   │   │   ├── useImageModal.js # Image modal hook
+│   │   │   └── useScrollAnimation.js # Scroll animation
+│   │   ├── 📁 routes/        # Route configurations
+│   │   │   ├── protectedRoute.jsx # Route guard
+│   │   │   └── protectedRoutes.js # Route definitions
+│   │   ├── 📁 Data/          # Static data
+│   │   ├── App.jsx
+│   │   └── index.js
+│   ├── .env                # Environment variables
+│   ├── package.json        # Frontend dependencies
+│   └── README.md           # Frontend documentation
 ├── 📁 server/                # Node.js backend application
 │   ├── 📁 controllers/       # Business logic
+│   │   ├── admin/           # Admin controllers
+│   │   ├── citizen/         # Citizen controllers
+│   │   ├── general/         # Shared controllers
+│   │   ├── officer/         # Officer controllers
+│   │   └── superAdmin/      # SuperAdmin controllers
 │   ├── 📁 models/            # Database schemas
-│   │   ├── 📁 citizen/       # Citizen models
-│   │   ├── 📁 officer/       # Officer models
-│   │   ├── 📁 admin/         # Admin models
-│   │   ├── 📁 superAdmin/    # SuperAdmin models
-│   │   ├── 📁 complaint/     # Complaint models
-│   │   └── 📁 general/       # Shared models (Counter, etc.)
+│   │   ├── admin/           # Admin models
+│   │   ├── citizen/         # Citizen models
+│   │   ├── general/         # Shared models (Counter, Complaint, etc.)
+│   │   ├── officer/         # Officer models
+│   │   └── superAdmin/      # SuperAdmin models
 │   ├── 📁 routes/            # API endpoints
+│   │   ├── admin/           # Admin routes
+│   │   ├── citizen/         # Citizen routes
+│   │   ├── general/         # Shared routes
+│   │   ├── officer/         # Officer routes
+│   │   └── superAdmin/      # SuperAdmin routes
 │   ├── 📁 middleware/        # Custom middleware
+│   │   ├── authMiddleware.js # JWT authentication
+│   │   ├── errorMiddleware.js # Error handling
+│   │   ├── superAdminAccessMiddleware.js # Access code
+│   │   └── uploadMiddleware.js # File upload
 │   ├── 📁 config/            # Configuration files
+│   │   ├── cloudinary.js    # Cloudinary config
+│   │   └── db.js            # MongoDB connection
 │   ├── 📁 utils/             # Helper functions
-│   ├── 📄 server.js          # Entry point
-│   ├── 📄 package.json       # Backend dependencies
-│   └── 📄 README.md          # Backend documentation
-├── 📄 README.md              # This file
-└── 📄 LICENSE                # License information
+│   │   ├── authHelper.js    # Auth utilities
+│   │   ├── cloudinaryHelper.js # Image upload
+│   │   ├── generateEmployeeId.js # ID generation
+│   │   ├── generateToken.js # JWT generation
+│   │   ├── queryHelper.js   # Query builders
+│   │   ├── userHelper.js    # User utilities
+│   │   └── validationHelper.js # Validation
+│   ├── 📁 scripts/           # Utility scripts
+│   │   └── migrateTimeline.js # Data migration
+│   ├── server.js           # Entry point
+│   ├── .env                # Environment variables
+│   ├── package.json        # Backend dependencies
+│   └── README.md           # Backend documentation
+├── .amazonq/               # Amazon Q rules
+├── README.md               # This file
+└── sample-complaints.json  # Sample data
 ```
 
 ---
@@ -248,6 +349,7 @@ open http://localhost:3000/sys-admin-portal-x7k9m
 ```
 
 **🔒 Security Notes:**
+
 - SuperAdmin NOT visible in role selection (`/login`)
 - Requires access code (frontend AccessGate + backend middleware)
 - 3 failed attempts = lockout + redirect
@@ -266,11 +368,11 @@ open http://localhost:3000/sys-admin-portal-x7k9m
 
 <div align="center">
 
-| Role               | ID Format | Access Level | Key Features                                          |
-| ------------------ | --------- | ------------ | ----------------------------------------------------- |
-| 🏠 **Citizen**     | CZ-XXXXXX | Basic        | Report issues, track complaints, view nearby problems |
-| 👮 **Officer**     | OF-XXXXXX | Field        | Manage assigned tasks, update status, upload proof    |
-| 🏢 **Admin**       | AD-XXXXXX | Department   | Assign tasks, manage officers, generate reports       |
+| Role               | ID Format | Access Level | Key Features                                                 |
+| ------------------ | --------- | ------------ | ------------------------------------------------------------ |
+| 🏠 **Citizen**     | CZ-XXXXXX | Basic        | Report issues, track complaints, view nearby problems        |
+| 👮 **Officer**     | OF-XXXXXX | Field        | Manage assigned tasks, update status, upload proof           |
+| 🏢 **Admin**       | AD-XXXXXX | Department   | Assign tasks, manage officers, generate reports              |
 | 🔧 **Super Admin** | SA-XXXXXX | System       | Full system access (Hidden portal with access code security) |
 
 </div>
@@ -329,16 +431,19 @@ For complete API documentation, see [API Reference](./server/README.md#api-endpo
 SuperAdmin access is protected with multiple security layers:
 
 ### **Hidden URLs**
+
 - Login: `/sys-admin-portal-x7k9m`
 - Register: `/sys-admin-register-x7k9m`
 - NOT visible in role selection page (`/login`)
 
 ### **Access Code Protection**
+
 - **Frontend**: AccessGate component validates code
 - **Backend**: Middleware validates `x-admin-access-code` header
 - **Lockout**: 3 failed attempts = redirect to home
 
 ### **Configuration**
+
 ```env
 # client/.env
 REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code_here
@@ -348,6 +453,7 @@ SUPERADMIN_ACCESS_CODE=your_secure_code_here
 ```
 
 ### **Documentation**
+
 - 📄 `ACCESS_CODE.md` - How to get and change access code
 - 📄 `SUPERADMIN_SECURITY.md` - Complete security guide
 - 📄 `client/src/components/AccessGate/WORKFLOW.md` - AccessGate workflow
@@ -424,11 +530,11 @@ REACT_APP_API_BASE_URL=https://your-api-domain.com/api
 ```env
 NODE_ENV=production
 PORT=8080
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
+MONGO_URI=<your_mongodb_connection_string>
+JWT_SECRET=<your_jwt_secret>
+CLOUDINARY_CLOUD_NAME=<your_cloudinary_name>
+CLOUDINARY_API_KEY=<your_cloudinary_key>
+CLOUDINARY_API_SECRET=<your_cloudinary_secret>
 ```
 
 ---

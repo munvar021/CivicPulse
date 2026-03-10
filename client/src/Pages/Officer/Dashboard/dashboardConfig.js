@@ -2,7 +2,7 @@ import {
   faFileAlt,
   faHourglassHalf,
   faCheckCircle,
-  faBan,
+  faExclamationTriangle,
   faTasks,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -26,7 +26,12 @@ export const getStatsConfig = (stats) => [
     icon: faCheckCircle,
     color: "#10b981",
   },
-  { label: "Blocked", value: stats.blocked, icon: faBan, color: "#ef4444" },
+  {
+    label: "Delayed",
+    value: stats.delayed,
+    icon: faExclamationTriangle,
+    color: "#ef4444",
+  },
 ];
 
 export const getEmptyStateConfig = () => ({

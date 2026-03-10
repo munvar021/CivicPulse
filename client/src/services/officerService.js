@@ -52,11 +52,8 @@ const updateTaskProgress = async (id, data) => {
 };
 
 const getDashboardData = async () => {
-  const [stats, activeTasks] = await Promise.all([
-    getOfficerDashboardStats(),
-    getOfficerActiveTasks(),
-  ]);
-  return { stats, activeTasks };
+  const response = await api.get(`${API_URL}/dashboard/stats`);
+  return response.data;
 };
 
 const officerService = {

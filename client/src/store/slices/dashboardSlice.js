@@ -1,59 +1,59 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import citizenService from '../../services/citizenService';
-import officerService from '../../services/officerService';
-import adminService from '../../services/adminService';
-import superAdminService from '../../services/superAdminService';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import citizenService from "../../services/citizenService";
+import officerService from "../../services/officerService";
+import adminService from "../../services/adminService";
+import superAdminService from "../../services/superAdminService";
 
 export const fetchCitizenDashboard = createAsyncThunk(
-  'dashboard/fetchCitizenDashboard',
+  "dashboard/fetchCitizenDashboard",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await citizenService.getDashboardData();
-      return { role: 'citizen', data };
+      return { role: "citizen", data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 export const fetchOfficerDashboard = createAsyncThunk(
-  'dashboard/fetchOfficerDashboard',
+  "dashboard/fetchOfficerDashboard",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await officerService.getDashboardData();
-      return { role: 'officer', data };
+      const data = await officerService.getDashboardData();
+      return { role: "officer", data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 export const fetchAdminDashboard = createAsyncThunk(
-  'dashboard/fetchAdminDashboard',
+  "dashboard/fetchAdminDashboard",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await adminService.getDashboardData();
-      return { role: 'admin', data };
+      const data = await adminService.getDashboardData();
+      return { role: "admin", data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 export const fetchSuperAdminDashboard = createAsyncThunk(
-  'dashboard/fetchSuperAdminDashboard',
+  "dashboard/fetchSuperAdminDashboard",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await superAdminService.getSuperAdminDashboardData();
-      return { role: 'superAdmin', data };
+      return { role: "superAdmin", data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
     }
-  }
+  },
 );
 
 const dashboardSlice = createSlice({
-  name: 'dashboard',
+  name: "dashboard",
   initialState: {
     citizen: null,
     officer: null,

@@ -2,6 +2,7 @@ import {
   faFileAlt,
   faCheckCircle,
   faHourglassHalf,
+  faExclamationTriangle,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -34,6 +35,12 @@ export const statsConfig = {
       label: "In Progress",
       icon: faHourglassHalf,
       color: "#f59e0b",
+    },
+    {
+      key: "delayed",
+      label: "Delayed",
+      icon: faExclamationTriangle,
+      color: "#ef4444",
     },
     {
       key: "avgRating",

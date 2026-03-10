@@ -7,6 +7,8 @@ import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import FormPageLayout from "../../../components/Layouts/FormPageLayout/formPageLayout";
 import Button from "../../../components/Button/button";
 import Map from "../../../components/Map/map";
+import ImageModal from "../../../components/ImageModal/imageModal";
+import { useImageModal } from "../../../hooks/useImageModal";
 import { useAuth } from "../../../context/authContext";
 import citizenService from "../../../services/citizenService";
 import superAdminService from "../../../services/superAdminService";
@@ -49,8 +51,10 @@ const ReportIssue = () => {
   const [geolocationError, setGeolocationError] = useState("");
   const [departments, setDepartments] = useState([]);
 
-  const [selectedFiles, setSelectedFiles] = useState([]); // State to manage selected File objects
-  const [imagePreviews, setImagePreviews] = useState([]); // State for image previews
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const { isOpen, currentIndex, openModal, closeModal, navigateToImage } =
+    useImageModal(imagePreviews);
 
   const watchedLocation = watch("location");
   const watchedLat = watch("lat");
@@ -414,7 +418,11 @@ const ReportIssue = () => {
             <ImagePreviewContainer>
               {imagePreviews.map((src, index) => (
                 <ImagePreviewWrapper key={index}>
-                  <ImagePreview src={src} alt={`Preview ${index + 1}`} />
+                  <ImagePreview
+                    src={src}
+                    alt={`Preview ${index + 1}`}
+                    onClick={() => openModal(index)}
+                  />
                   <RemoveImageButton
                     type="button"
                     onClick={() => removeImage(index)}
@@ -483,6 +491,13 @@ const ReportIssue = () => {
           </Button>
         </ButtonContainer>
       </form>
+      <ImageModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        images={imagePreviews}
+        currentIndex={currentIndex}
+        onNavigate={navigateToImage}
+      />
     </FormPageLayout>
   );
 };

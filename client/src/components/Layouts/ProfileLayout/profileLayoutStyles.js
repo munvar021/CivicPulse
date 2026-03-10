@@ -9,10 +9,12 @@ export const PageContainer = styled.div`
   background: transparent;
   min-height: 100vh;
   animation: fadeInUp 0.6s ease-out;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     padding: 1rem;
     padding-top: 120px;
+    max-width: 100%;
   }
 
   @media (max-width: 480px) {
@@ -44,6 +46,7 @@ export const ProfileCard = styled.div`
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+  overflow: hidden;
 
   &:hover {
     transform: translateY(-2px);
@@ -115,9 +118,14 @@ export const ProfileInfo = styled.div`
   margin-bottom: 1.5rem;
   align-items: center;
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     grid-template-columns: 120px 1fr;
     gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
     margin-bottom: 1rem;
   }
 `;
@@ -138,6 +146,8 @@ export const InfoValue = styled.div`
   font-size: 1.0625rem;
   color: ${theme.colors.text.primary};
   line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: break-word;
 
   @media (max-width: 768px) {
     font-size: 1rem;

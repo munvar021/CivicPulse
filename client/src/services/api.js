@@ -1,5 +1,6 @@
 import axios from "axios";
 import toast from "../utils/toast";
+import { clearStoredToken, getStoredToken } from "../utils/authStorage";
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -9,7 +10,7 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = getStoredToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -38,7 +39,7 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       !error.config.url.includes("/users/me")
     ) {
-      localStorage.removeItem("token");
+      clearStoredToken();
       window.location.href = "/login";
     } else if (error.response?.status === 403) {
       toast.error("Access denied");

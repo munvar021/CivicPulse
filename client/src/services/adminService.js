@@ -126,11 +126,8 @@ const verifyComplaint = async (id) => {
 };
 
 const getDashboardData = async () => {
-  const [stats, recentComplaints] = await Promise.all([
-    getAdminDashboardStats(),
-    getRecentComplaints(),
-  ]);
-  return { stats, recentComplaints };
+  const response = await api.get(`${API_URL}/dashboard/stats`);
+  return response.data;
 };
 
 const adminService = {

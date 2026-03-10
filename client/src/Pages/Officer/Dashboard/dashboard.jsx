@@ -10,13 +10,22 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const { officer: dashboardData, loading, error } = useSelector((state) => state.dashboard);
+  const {
+    officer: dashboardData,
+    loading,
+    error,
+  } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
     dispatch(fetchOfficerDashboard());
   }, [dispatch]);
 
-  const stats = dashboardData?.stats || { total: 0, inProgress: 0, completed: 0, blocked: 0 };
+  const stats = dashboardData?.stats || {
+    total: 0,
+    inProgress: 0,
+    completed: 0,
+    delayed: 0,
+  };
   const activeTasks = dashboardData?.activeTasks || [];
 
   return (

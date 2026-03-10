@@ -7,7 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import FormPageLayout from "../../../components/Layouts/FormPageLayout/formPageLayout";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
+import ImageModal from "../../../components/ImageModal/imageModal";
+import { useImageModal } from "../../../hooks/useImageModal";
 import officerService from "../../../services/officerService";
+import { customReactSelectStyles } from "../../../styles/reactSelectStyles";
 import {
   FormGroup,
   Label,
@@ -30,6 +33,9 @@ const UpdateStatus = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
+  const imagePreviews = images.map((img) => img.preview);
+  const { isOpen, currentIndex, openModal, closeModal, navigateToImage } =
+    useImageModal(imagePreviews);
   const {
     control,
     handleSubmit,
@@ -49,40 +55,6 @@ const UpdateStatus = () => {
     { value: "resolved", label: "Completed" },
     { value: "blocked", label: "Blocked" },
   ];
-
-  const customSelectStyles = {
-    control: (base, state) => ({
-      ...base,
-      background: "rgba(255, 255, 255, 0.03)",
-      backdropFilter: "blur(10px)",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
-      borderRadius: "10px",
-      padding: "0.1rem",
-      color: "#ffffff",
-      boxShadow: state.isFocused
-        ? "0 0 0 3px rgba(255, 255, 255, 0.1)"
-        : "none",
-      "&:hover": { borderColor: "rgba(255, 255, 255, 0.3)" },
-    }),
-    menu: (base) => ({
-      ...base,
-      background: "rgba(17, 24, 39, 0.95)",
-      backdropFilter: "blur(20px)",
-      border: "1px solid rgba(255, 255, 255, 0.16)",
-      borderRadius: "10px",
-      overflow: "hidden",
-    }),
-    option: (base, state) => ({
-      ...base,
-      background: state.isFocused ? "rgba(255, 255, 255, 0.1)" : "transparent",
-      color: "#ffffff",
-      cursor: "pointer",
-      "&:active": { background: "rgba(255, 255, 255, 0.15)" },
-    }),
-    singleValue: (base) => ({ ...base, color: "#ffffff" }),
-    input: (base) => ({ ...base, color: "#ffffff" }),
-    placeholder: (base) => ({ ...base, color: "rgba(255, 255, 255, 0.5)" }),
-  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -150,7 +122,7 @@ const UpdateStatus = () => {
               <Select
                 {...field}
                 options={statusOptions}
-                styles={customSelectStyles}
+                styles={customReactSelectStyles}
                 placeholder="Select status..."
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
@@ -213,7 +185,11 @@ const UpdateStatus = () => {
             <ImagePreviewGrid>
               {images.map((img, index) => (
                 <ImagePreview key={index}>
-                  <img src={img.preview} alt={`Preview ${index + 1}`} />
+                  <img
+                    src={img.preview}
+                    alt={`Preview ${index + 1}`}
+                    onClick={() => openModal(index)}
+                  />
                   <RemoveImageButton
                     type="button"
                     onClick={() => removeImage(index)}
@@ -240,6 +216,13 @@ const UpdateStatus = () => {
           </CancelButton>
         </ButtonGroup>
       </form>
+      <ImageModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        images={imagePreviews}
+        currentIndex={currentIndex}
+        onNavigate={navigateToImage}
+      />
     </FormPageLayout>
   );
 };

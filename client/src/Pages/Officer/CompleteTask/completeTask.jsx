@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import FormPageLayout from "../../../components/Layouts/FormPageLayout/formPageLayout";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
+import ImageModal from "../../../components/ImageModal/imageModal";
+import { useImageModal } from "../../../hooks/useImageModal";
 import officerService from "../../../services/officerService";
 import {
   InfoText,
@@ -32,6 +34,9 @@ const CompleteTask = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
+  const imagePreviews = images.map((img) => img.preview);
+  const { isOpen, currentIndex, openModal, closeModal, navigateToImage } =
+    useImageModal(imagePreviews);
   const {
     control,
     handleSubmit,
@@ -151,7 +156,11 @@ const CompleteTask = () => {
             <ImagePreviewGrid>
               {images.map((img, index) => (
                 <ImagePreview key={index}>
-                  <img src={img.preview} alt={`Proof ${index + 1}`} />
+                  <img
+                    src={img.preview}
+                    alt={`Proof ${index + 1}`}
+                    onClick={() => openModal(index)}
+                  />
                   <RemoveImageButton
                     type="button"
                     onClick={() => removeImage(index)}
@@ -178,6 +187,13 @@ const CompleteTask = () => {
           </CancelButton>
         </ButtonGroup>
       </form>
+      <ImageModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        images={imagePreviews}
+        currentIndex={currentIndex}
+        onNavigate={navigateToImage}
+      />
     </FormPageLayout>
   );
 };

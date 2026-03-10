@@ -1,278 +1,705 @@
-# CivicPulse Server
+# CivicPulse Backend 🚀
 
-Backend API for CivicPulse - A civic complaint management system.
+Node.js/Express backend API for the CivicPulse civic complaint management system with MongoDB database, JWT authentication, and Cloudinary image storage.
 
-## Tech Stack
+## 📋 Table of Contents
 
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM
-- **JWT** - Authentication
-- **Cloudinary** - Image storage
-- **Multer** - File upload handling
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [API Endpoints](#api-endpoints)
+- [Database Models](#database-models)
+- [Authentication](#authentication)
+- [File Upload](#file-upload)
+- [Environment Variables](#environment-variables)
 
-## Project Structure
+---
+
+## 🌟 Overview
+
+The CivicPulse backend is a RESTful API built with Node.js and Express, featuring:
+- **JWT Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Citizen, Officer, Admin, SuperAdmin
+- **MongoDB Database**: NoSQL database with Mongoose ODM
+- **Image Upload**: Cloudinary integration for image storage
+- **Sequential IDs**: Auto-generated employee IDs (CZ-XXXXXX, OF-XXXXXX, etc.)
+- **Timeline Tracking**: Comprehensive complaint progress tracking
+- **CSV Export**: Report generation and export
+- **GeoJSON Support**: Geographic zone management
+
+---
+
+## 💻 Tech Stack
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| Node.js | 18.x | Runtime environment |
+| Express | 4.18.2 | Web framework |
+| Mongoose | 8.0.4 | MongoDB ODM |
+| JWT | 9.0.2 | Authentication tokens |
+| Bcrypt.js | 2.4.3 | Password hashing |
+| Cloudinary | 2.9.0 | Image storage |
+| Multer | 2.0.2 | File upload middleware |
+| Cookie Parser | 1.4.7 | Cookie parsing |
+| CORS | 2.8.6 | Cross-origin resource sharing |
+| CSV Stringify | 6.6.0 | CSV export |
+| Dotenv | 16.4.5 | Environment variables |
+
+---
+
+## 📁 Project Structure
 
 ```
 server/
-├── config/              # Configuration files
-│   ├── cloudinary.js    # Cloudinary setup
-│   └── db.js            # MongoDB connection
-├── controllers/         # Business logic
-│   ├── admin/           # Admin controllers
-│   ├── citizen/         # Citizen controllers
-│   ├── officer/         # Officer controllers
-│   ├── superAdmin/      # SuperAdmin controllers
-│   └── general/         # Shared controllers
-├── middleware/          # Custom middleware
-│   ├── authMiddleware.js    # JWT authentication & authorization
-│   ├── errorMiddleware.js   # Error handling
-│   └── uploadMiddleware.js  # File upload handling
-├── models/              # Mongoose schemas
-│   ├── admin/           # Admin models
-│   ├── citizen/         # Citizen models
-│   ├── officer/         # Officer models
-│   ├── superAdmin/      # SuperAdmin models
-│   └── general/         # Shared models
-├── routes/              # API routes
-│   ├── admin/           # Admin routes
-│   ├── citizen/         # Citizen routes
-│   ├── officer/         # Officer routes
-│   ├── superAdmin/      # SuperAdmin routes
-│   └── general/         # Shared routes
-├── scripts/             # Database migrations & utilities
-│   └── migrateTimeline.js   # Timeline schema migration
-├── utils/               # Helper functions
-│   ├── authHelper.js        # Authentication utilities
-│   ├── cloudinaryHelper.js  # Cloudinary operations
-│   ├── queryHelper.js       # Query building utilities
-│   ├── validationHelper.js  # Validation functions
-│   └── userHelper.js        # User-related utilities
-├── .env                 # Environment variables
-├── .env.example         # Environment template
-├── server.js            # Entry point
-└── seeder.js            # Database seeder
+├── config/
+│   ├── cloudinary.js       # Cloudinary configuration
+│   └── db.js               # MongoDB connection
+├── controllers/
+│   ├── admin/
+│   │   └── adminController.js
+│   ├── citizen/
+│   │   └── citizenController.js
+│   ├── general/
+│   │   ├── categoryController.js
+│   │   ├── complaintController.js
+│   │   ├── settingController.js
+│   │   └── userController.js
+│   ├── officer/
+│   │   └── officerController.js
+│   └── superAdmin/
+│       ├── departmentController.js
+│       ├── superAdminController.js
+│       └── zoneController.js
+├── middleware/
+│   ├── authMiddleware.js   # JWT authentication
+│   ├── errorMiddleware.js  # Error handling
+│   ├── superAdminAccessMiddleware.js # Access code validation
+│   └── uploadMiddleware.js # File upload handling
+├── models/
+│   ├── admin/
+│   │   └── Admin.js
+│   ├── citizen/
+│   │   └── Citizen.js
+│   ├── general/
+│   │   ├── Category.js
+│   │   ├── Complaint.js
+│   │   ├── Counter.js      # Sequential ID generation
+│   │   ├── Department.js
+│   │   ├── Setting.js
+│   │   └── User.js
+│   ├── officer/
+│   │   └── Officer.js
+│   └── superAdmin/
+│       ├── SuperAdmin.js
+│       └── Zone.js
+├── routes/
+│   ├── admin/
+│   │   └── adminRoutes.js
+│   ├── citizen/
+│   │   └── citizenRoutes.js
+│   ├── general/
+│   │   ├── authRoutes.js
+│   │   ├── categoryRoutes.js
+│   │   ├── complaintRoutes.js
+│   │   ├── settingRoutes.js
+│   │   └── userRoutes.js
+│   ├── officer/
+│   │   └── officerRoutes.js
+│   └── superAdmin/
+│       ├── departmentRoutes.js
+│       ├── superAdminAuthRoutes.js
+│       ├── superAdminRoutes.js
+│       └── zoneRoutes.js
+├── scripts/
+│   └── migrateTimeline.js  # Data migration script
+├── utils/
+│   ├── authHelper.js       # Authentication utilities
+│   ├── cloudinaryHelper.js # Image upload utilities
+│   ├── generateEmployeeId.js # ID generation
+│   ├── generateToken.js    # JWT generation
+│   ├── queryHelper.js      # Query builders
+│   ├── userHelper.js       # User utilities
+│   └── validationHelper.js # Validation utilities
+├── server.js               # Entry point
+├── .env                    # Environment variables
+└── package.json            # Dependencies
 ```
 
-## Installation
+---
 
-1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd CivicPulse/server
-```
+## 🚀 Getting Started
 
-2. **Install dependencies**
+### Prerequisites
+
+- Node.js 18.x or higher
+- MongoDB 6.x or higher
+- Cloudinary account
+
+### Installation
+
 ```bash
+# Install dependencies
 npm install
-```
 
-3. **Configure environment variables**
-```bash
+# Create environment file
 cp .env.example .env
+
+# Update environment variables
+# Edit .env with your configuration
 ```
 
-Edit `.env` with your configuration:
+### Environment Variables
+
+Create a `.env` file in the server directory:
+
 ```env
+# Server Configuration
 NODE_ENV=development
 PORT=8080
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+
+# Database
+MONGO_URI=<your_mongodb_connection_string>
+
+# JWT
+JWT_SECRET=<your_jwt_secret_key>
 JWT_EXPIRE=30d
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
-SUPERADMIN_ACCESS_CODE=your_secure_code_here
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_API_KEY=<your_api_key>
+CLOUDINARY_API_SECRET=<your_api_secret>
+
+# SuperAdmin Access
+SUPERADMIN_ACCESS_CODE=<your_secure_access_code>
 ```
 
-**Note**: Generate a strong access code. Must match frontend code. See `ACCESS_CODE.md`.
+### Development
 
-4. **Start the server**
 ```bash
-# Development
-npm run dev
+# Start development server with nodemon
+npm run server
 
-# Production
+# Start production server
 npm start
+
+# Run migration script
+npm run migrate:timeline
 ```
 
-## API Endpoints
+The API will be available at `http://localhost:8080`
+
+---
+
+## 📡 API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - User login (all roles)
-- `POST /api/citizens/register` - Citizen registration
-- `POST /api/superadmin/verify-access` - Verify SuperAdmin access code
-- `POST /api/superadmin/register` - SuperAdmin registration (requires access code header)
 
-### Citizen Routes
-- `GET /api/citizen/dashboard` - Get dashboard data
-- `GET /api/citizen/complaints` - Get my complaints
-- `POST /api/complaints` - Create complaint
-- `PUT /api/complaints/:id` - Update complaint
-- `DELETE /api/complaints/:id` - Delete complaint
-- `GET /api/complaints/nearby` - Get nearby complaints
-- `POST /api/complaints/:id/feedback` - Submit feedback
-
-### Officer Routes
-- `GET /api/officer/dashboard` - Get dashboard data
-- `GET /api/officer/tasks` - Get assigned tasks
-- `GET /api/officer/tasks/:id` - Get task details
-- `PUT /api/officer/tasks/:id/progress` - Update task progress
-- `GET /api/officer/work-history` - Get work history
-
-### Admin Routes
-- `GET /api/admin/dashboard` - Get dashboard data
-- `GET /api/admin/complaints` - Get all complaints
-- `POST /api/admin/complaints/:id/assign` - Assign complaint to officer
-- `PUT /api/admin/complaints/:id/reassign` - Reassign complaint
-- `GET /api/admin/officers` - Get all officers
-- `POST /api/admin/officers` - Create officer
-- `GET /api/admin/reports` - Get reports
-- `GET /api/admin/escalations` - Get escalated complaints
-
-### SuperAdmin Routes
-- `POST /api/superadmin/verify-access` - Verify access code
-- `GET /api/superadmin/dashboard` - Get dashboard data
-- `GET /api/superadmin/reports` - Get global reports
-- `GET /api/superadmin/monitoring` - Get system monitoring data
-- `GET /api/users` - Get all users
-- `POST /api/users` - Create user
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
-- `GET /api/departments` - Get all departments
-- `POST /api/departments` - Create department
-- `GET /api/superadmin/zones` - Get all zones
-- `POST /api/superadmin/zones` - Create zone
-- `GET /api/settings` - Get settings
-- `PUT /api/settings` - Update settings
-- `GET /api/categories` - Get categories
-- `POST /api/categories` - Create category
-
-**Note**: All SuperAdmin routes (except `/verify-access`) require `x-admin-access-code` header.
-
-## Authentication & Authorization
-
-### Roles
-- **Citizen** (CZ-XXXXXX) - Report and track complaints
-- **Officer** (OF-XXXXXX) - Handle assigned tasks
-- **Admin** (AD-XXXXXX) - Manage department operations
-- **SuperAdmin** (SA-XXXXXX) - System-wide administration
-
-### Sequential ID System
-Each role has automatic, sequential ID generation:
-- **Counter Model**: Tracks sequence per role
-- **Format**: PREFIX-XXXXXX (e.g., CZ-000001)
-- **Thread-Safe**: Atomic MongoDB operations
-- **Auto-Generated**: Created during user registration
-
-### Protected Routes
-All routes except `/api/auth/*` require JWT authentication via HTTP-only cookie.
-
-### Authorization Middleware
-```javascript
-protect      // Verify JWT token
-authorize([roles])  // Check user role
+#### General Auth
+```http
+POST   /api/auth/login              # Login (all roles)
+GET    /api/auth/me                 # Get current user
+POST   /api/auth/logout             # Logout
 ```
 
-## Database Models
+#### Citizen Auth
+```http
+POST   /api/citizens/register       # Citizen self-registration
+POST   /api/citizens/login          # Citizen login
+```
+
+#### SuperAdmin Auth
+```http
+POST   /api/superadmin/verify-access # Verify access code
+POST   /api/superadmin/register     # Register (requires access code)
+POST   /api/superadmin/login        # Login
+```
+
+### Complaints
+
+#### Citizen Endpoints
+```http
+GET    /api/citizens/complaints     # Get my complaints
+POST   /api/citizens/complaints     # Create complaint
+GET    /api/citizens/complaints/:id # Get complaint details
+PUT    /api/citizens/complaints/:id # Update complaint
+DELETE /api/citizens/complaints/:id # Delete complaint
+GET    /api/citizens/nearby         # Get nearby complaints
+POST   /api/citizens/feedback/:id   # Provide feedback
+```
+
+#### Officer Endpoints
+```http
+GET    /api/officers/tasks          # Get assigned tasks
+GET    /api/officers/tasks/:id      # Get task details
+POST   /api/officers/tasks/:id/progress # Update task progress
+GET    /api/officers/work-history   # Get work history
+```
+
+#### Admin Endpoints
+```http
+GET    /api/admin/complaints        # Get department complaints
+GET    /api/admin/complaints/:id    # Get complaint details
+POST   /api/admin/complaints/:id/assign # Assign to officer
+PUT    /api/admin/complaints/:id/reassign # Reassign complaint
+PUT    /api/admin/complaints/:id/due-date # Update due date
+PUT    /api/admin/complaints/:id/assignment # Update assignment
+POST   /api/admin/complaints/:id/verify # Verify complaint
+GET    /api/admin/escalations       # Get escalated complaints
+```
+
+#### SuperAdmin Endpoints
+```http
+GET    /api/superadmin/complaints   # Get all complaints
+GET    /api/superadmin/complaints/:id # Get complaint details
+POST   /api/superadmin/complaints/:id/assign # Assign complaint
+PUT    /api/superadmin/complaints/:id/reassign # Reassign complaint
+POST   /api/superadmin/complaints/:id/verify # Verify complaint
+```
+
+### User Management
+
+#### Admin Endpoints
+```http
+GET    /api/admin/officers          # Get department officers
+POST   /api/admin/officers          # Create officer
+PUT    /api/admin/officers/:id      # Update officer
+DELETE /api/admin/officers/:id      # Delete officer
+GET    /api/admin/me                # Get admin profile
+PUT    /api/admin/profile           # Update admin profile
+```
+
+#### SuperAdmin Endpoints
+```http
+GET    /api/superadmin/users        # Get all users
+POST   /api/superadmin/users        # Create user
+PUT    /api/superadmin/users/:id    # Update user
+DELETE /api/superadmin/users/:id    # Delete user
+GET    /api/superadmin/me           # Get superadmin profile
+PUT    /api/superadmin/profile      # Update superadmin profile
+```
+
+### Departments
+
+```http
+GET    /api/superadmin/departments  # Get all departments
+POST   /api/superadmin/departments  # Create department
+PUT    /api/superadmin/departments/:id # Update department
+DELETE /api/superadmin/departments/:id # Delete department
+```
+
+### Zones
+
+```http
+GET    /api/superadmin/zones        # Get all zones
+POST   /api/superadmin/zones        # Create zone (GeoJSON)
+PUT    /api/superadmin/zones/:id    # Update zone
+DELETE /api/superadmin/zones/:id    # Delete zone
+```
+
+### Dashboard & Reports
+
+#### Citizen Dashboard
+```http
+GET    /api/citizens/dashboard      # Get citizen dashboard data
+```
+
+#### Officer Dashboard
+```http
+GET    /api/officers/dashboard      # Get officer dashboard data
+GET    /api/officers/stats          # Get officer statistics
+```
+
+#### Admin Dashboard
+```http
+GET    /api/admin/dashboard         # Get admin dashboard data
+GET    /api/admin/reports           # Get department reports
+GET    /api/admin/profile/stats     # Get profile statistics
+```
+
+#### SuperAdmin Dashboard
+```http
+GET    /api/superadmin/dashboard    # Get system dashboard data
+GET    /api/superadmin/reports      # Get global reports
+GET    /api/superadmin/reports/export # Export reports (CSV)
+GET    /api/superadmin/monitoring   # Get system monitoring data
+```
+
+### Settings
+
+```http
+GET    /api/settings                # Get all settings
+GET    /api/settings/:key           # Get setting by key
+PUT    /api/settings/:key           # Update setting
+```
+
+---
+
+## 🗄️ Database Models
 
 ### User Models
-- **Citizen** - Citizens who report complaints
-- **Officer** - Field officers who resolve issues
-- **Admin** - Department administrators
-- **SuperAdmin** - System administrators
 
-### Core Models
-- **Complaint** - Civic complaints with location, images, status
-- **Department** - Government departments
-- **Zone** - Geographic zones
-- **Category** - Complaint categories
-- **Setting** - System settings
-- **Counter** - Sequential ID tracking per role
-
-## Features
-
-### Security
-- JWT authentication with HTTP-only cookies
-- Password hashing with bcrypt
-- Role-based access control (RBAC)
-- Protected routes and authorization middleware
-- SuperAdmin access code validation (frontend + backend)
-
-### File Upload
-- Image upload to Cloudinary
-- Multiple image support
-- Automatic image optimization
-- Secure file handling with Multer
-
-### Geolocation
-- GeoJSON support for location data
-- Nearby complaints search
-- Zone-based complaint filtering
-
-### Error Handling
-- Centralized error middleware
-- Async error handling
-- Consistent error responses
-
-## Scripts
-
-```bash
-npm start              # Start production server
-npm run server         # Start development server with nodemon
-npm run migrate:timeline  # Run timeline migration
+#### Citizen
+```javascript
+{
+  employeeId: String,      // CZ-000001, CZ-000002, etc.
+  name: String,
+  email: String (unique),
+  password: String (hashed),
+  phone: String (unique),
+  role: 'citizen',
+  createdAt: Date,
+  updatedAt: Date
+}
 ```
 
-**Note**: The seeder has been removed. Users must register through proper channels:
-- Citizens: `/citizen/register`
-- SuperAdmin: `/superadmin/register`
-- Officers/Admins: Created by SuperAdmin via User Management
+#### Officer
+```javascript
+{
+  employeeId: String,      // OF-000001, OF-000002, etc.
+  name: String,
+  email: String (unique),
+  password: String (hashed),
+  phone: String (unique),
+  department: ObjectId (ref: Department),
+  role: 'officer',
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-## Environment Variables
+#### Admin
+```javascript
+{
+  employeeId: String,      // AD-000001, AD-000002, etc.
+  name: String,
+  email: String (unique),
+  password: String (hashed),
+  phone: String (unique),
+  department: ObjectId (ref: Department),
+  zone: ObjectId (ref: Zone),
+  role: 'admin',
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| NODE_ENV | Environment (development/production) | Yes |
-| PORT | Server port | Yes |
-| MONGO_URI | MongoDB connection string | Yes |
-| JWT_SECRET | JWT signing secret | Yes |
-| JWT_EXPIRE | JWT expiration time | Yes |
-| CLOUDINARY_CLOUD_NAME | Cloudinary cloud name | Yes |
-| CLOUDINARY_API_KEY | Cloudinary API key | Yes |
-| CLOUDINARY_API_SECRET | Cloudinary API secret | Yes |
-| SUPERADMIN_ACCESS_CODE | SuperAdmin access code | Yes |
+#### SuperAdmin
+```javascript
+{
+  employeeId: String,      // SA-000001, SA-000002, etc.
+  name: String,
+  email: String (unique),
+  password: String (hashed),
+  phone: String (unique),
+  role: 'superAdmin',
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-## Development
+### Complaint Model
 
-### Code Style
-- Use async/await for asynchronous operations
-- Use express-async-handler for error handling
-- Follow MVC pattern
-- Keep controllers thin, models fat
-- Use meaningful variable names
+```javascript
+{
+  title: String,
+  description: String,
+  category: String,
+  severity: String,        // low, medium, high, critical
+  status: String,          // pending, assigned, in_progress, resolved, closed
+  citizen: ObjectId (ref: Citizen),
+  department: ObjectId (ref: Department),
+  assignedTo: ObjectId (ref: Officer),
+  location: {
+    type: 'Point',
+    coordinates: [longitude, latitude],
+    address: String
+  },
+  images: [String],        // Cloudinary URLs
+  dueDate: Date,
+  resolutionDate: Date,
+  resolutionDetails: String,
+  feedback: {
+    rating: Number,
+    comment: String,
+    submittedAt: Date
+  },
+  timeline: [{
+    eventType: String,     // submitted, assigned, in_progress, resolved, etc.
+    status: String,
+    description: String,
+    updatedBy: ObjectId,
+    updatedByModel: String, // Citizen, Officer, Admin, SuperAdmin
+    metadata: Object,
+    date: Date
+  }],
+  progressUpdates: [{
+    status: String,
+    remarks: String,
+    images: [String],
+    updatedBy: ObjectId (ref: Officer),
+    createdAt: Date
+  }],
+  reassignmentHistory: [{
+    fromOfficer: ObjectId (ref: Officer),
+    toOfficer: ObjectId (ref: Officer),
+    reason: String,
+    newDueDate: Date,
+    reassignedBy: ObjectId,
+    reassignedAt: Date
+  }],
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-### Best Practices
-- Validate all inputs
-- Use lean queries for read-only operations
-- Implement proper error handling
-- Use environment variables for configuration
-- Keep routes organized by role
+### Department Model
 
-## Production Deployment
+```javascript
+{
+  name: String (unique),
+  description: String,
+  contactEmail: String,
+  contactPhone: String,
+  isActive: Boolean,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-1. Set `NODE_ENV=production`
-2. Use strong JWT_SECRET
-3. Enable CORS for specific origins
-4. Use HTTPS
-5. Implement rate limiting
-6. Set up monitoring and logging
-7. Use process manager (PM2)
+### Zone Model
 
-## License
+```javascript
+{
+  name: String (unique),
+  description: String,
+  location: {
+    type: 'Polygon',
+    coordinates: [[[longitude, latitude]]]  // GeoJSON
+  },
+  isActive: Boolean,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-Private - All rights reserved
+### Counter Model
 
-## Support
+```javascript
+{
+  _id: String,             // 'citizen', 'officer', 'admin', 'superAdmin'
+  seq: Number              // Sequential counter
+}
+```
 
-For issues and questions, contact the development team.
+---
+
+## 🔐 Authentication
+
+### JWT Token
+
+- **Algorithm**: HS256
+- **Expiration**: 30 days (configurable)
+- **Storage**: HTTP-only cookie + LocalStorage
+- **Payload**: User ID and role
+
+### Password Security
+
+- **Hashing**: Bcrypt with salt rounds
+- **Validation**: Minimum 8 characters, uppercase, lowercase, number, special character
+
+### Role-Based Access
+
+- **Citizen**: Can create, view, edit, delete own complaints
+- **Officer**: Can view assigned tasks, update progress
+- **Admin**: Can manage department complaints and officers
+- **SuperAdmin**: Full system access
+
+### Middleware
+
+#### authMiddleware
+```javascript
+// Protects routes requiring authentication
+// Verifies JWT token
+// Attaches user to request object
+```
+
+#### superAdminAccessMiddleware
+```javascript
+// Validates SuperAdmin access code
+// Checks x-admin-access-code header
+// Compares with environment variable
+```
+
+---
+
+## 📤 File Upload
+
+### Cloudinary Integration
+
+- **Image Upload**: Multer + Cloudinary
+- **Max Files**: 5 images per upload
+- **Formats**: JPEG, PNG, WebP
+- **Storage**: Cloudinary cloud storage
+- **Transformation**: Auto-optimization
+
+### Upload Endpoints
+
+```javascript
+// Complaint images
+POST /api/citizens/complaints
+- multipart/form-data
+- Field: images (max 5)
+
+// Progress update images
+POST /api/officers/tasks/:id/progress
+- multipart/form-data
+- Field: images (max 5)
+```
+
+---
+
+## 🔧 Utilities
+
+### generateEmployeeId
+
+Generates sequential employee IDs:
+- `CZ-000001`, `CZ-000002` for Citizens
+- `OF-000001`, `OF-000002` for Officers
+- `AD-000001`, `AD-000002` for Admins
+- `SA-000001`, `SA-000002` for SuperAdmins
+
+Uses MongoDB atomic operations for thread-safe increments.
+
+### queryHelper
+
+Builds MongoDB queries with:
+- Pagination
+- Filtering
+- Sorting
+- Search
+
+### cloudinaryHelper
+
+Handles image uploads:
+- Stream upload
+- Error handling
+- URL generation
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run tests (if configured)
+npm test
+```
+
+---
+
+## 📊 Database Indexes
+
+### Complaint Indexes
+- `location` (2dsphere) - Geospatial queries
+- `citizen` - Citizen complaints lookup
+- `assignedTo` - Officer tasks lookup
+- `department` - Department complaints lookup
+- `status` - Status filtering
+- `createdAt` - Sorting
+
+### User Indexes
+- `email` (unique) - User lookup
+- `phone` (unique) - Phone validation
+- `employeeId` (unique) - ID lookup
+
+---
+
+## 🚀 Deployment
+
+### Production Checklist
+
+- [ ] Set `NODE_ENV=production`
+- [ ] Use strong JWT secret
+- [ ] Configure MongoDB Atlas
+- [ ] Set up Cloudinary production account
+- [ ] Enable CORS for production domain
+- [ ] Set secure cookie options
+- [ ] Enable rate limiting
+- [ ] Set up logging
+- [ ] Configure error monitoring
+
+### Environment Variables
+
+```env
+NODE_ENV=production
+PORT=8080
+MONGO_URI=<your_mongodb_atlas_connection_string>
+JWT_SECRET=<strong_random_secret>
+CLOUDINARY_CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_API_KEY=<your_api_key>
+CLOUDINARY_API_SECRET=<your_api_secret>
+SUPERADMIN_ACCESS_CODE=<your_secure_access_code>
+```
+
+---
+
+## 📝 API Response Format
+
+### Success Response
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "stack": "..." // Only in development
+}
+```
+
+### Paginated Response
+```json
+{
+  "data": [...],
+  "currentPage": 1,
+  "totalPages": 10,
+  "total": 100
+}
+```
+
+---
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure token-based auth
+- **Password Hashing**: Bcrypt encryption
+- **CORS**: Configured for frontend domain
+- **Input Validation**: Mongoose schema validation
+- **SQL Injection Prevention**: MongoDB parameterized queries
+- **XSS Protection**: Input sanitization
+- **Rate Limiting**: (Recommended for production)
+- **Helmet**: (Recommended for production)
+
+---
+
+## 📄 License
+
+Private License - All rights reserved
+
+---
+
+## 🙏 Acknowledgments
+
+- Express.js for the web framework
+- MongoDB for the database
+- Cloudinary for image storage
+- JWT for authentication
+
+---
+
+**Built with ❤️ for better communities**

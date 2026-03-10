@@ -88,6 +88,12 @@ export const ImagePreview = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 `;
 

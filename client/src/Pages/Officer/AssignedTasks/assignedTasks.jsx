@@ -30,6 +30,7 @@ const AssignedTasks = () => {
     { value: "all", label: "All" },
     { value: "assigned", label: "Assigned" },
     { value: "in_progress", label: "In Progress" },
+    { value: "delayed", label: "Delayed" },
     { value: "resolved", label: "Resolved" },
   ];
 

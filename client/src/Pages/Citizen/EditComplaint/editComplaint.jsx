@@ -8,6 +8,9 @@ import FormPageLayout from "../../../components/Layouts/FormPageLayout/formPageL
 import Button from "../../../components/Button/button";
 import citizenService from "../../../services/citizenService";
 import ButtonLoader from "../../../components/Loaders/buttonLoader";
+import ImageModal from "../../../components/ImageModal/imageModal";
+import { useImageModal } from "../../../hooks/useImageModal";
+import { customReactSelectStyles } from "../../../styles/reactSelectStyles";
 import { toast } from "react-toastify";
 import {
   FormGroup,
@@ -36,51 +39,6 @@ const severityOptions = [
   { value: "critical", label: "Critical" },
 ];
 
-const customSelectStyles = {
-  control: (base, state) => ({
-    ...base,
-    background: "rgba(255, 255, 255, 0.04)",
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(255, 255, 255, 0.16)",
-    borderRadius: "10px",
-    padding: "0.25rem",
-    color: "#ffffff",
-    boxShadow: state.isFocused ? "0 0 0 3px rgba(255, 255, 255, 0.1)" : "none",
-    "&:hover": {
-      borderColor: "rgba(255, 255, 255, 0.3)",
-    },
-  }),
-  menu: (base) => ({
-    ...base,
-    background: "rgba(17, 24, 39, 0.95)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255, 255, 255, 0.16)",
-    borderRadius: "10px",
-    overflow: "hidden",
-  }),
-  option: (base, state) => ({
-    ...base,
-    background: state.isFocused ? "rgba(255, 255, 255, 0.1)" : "transparent",
-    color: "#ffffff",
-    cursor: "pointer",
-    "&:active": {
-      background: "rgba(255, 255, 255, 0.15)",
-    },
-  }),
-  singleValue: (base) => ({
-    ...base,
-    color: "#ffffff",
-  }),
-  input: (base) => ({
-    ...base,
-    color: "#ffffff",
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: "rgba(255, 255, 255, 0.5)",
-  }),
-};
-
 const EditComplaint = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -88,6 +46,9 @@ const EditComplaint = () => {
   const [submitting, setSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
+  const [allImages, setAllImages] = useState([]);
+  const { isOpen, currentIndex, openModal, closeModal, navigateToImage } =
+    useImageModal(allImages);
   const {
     register,
     handleSubmit,
@@ -95,6 +56,10 @@ const EditComplaint = () => {
     setValue,
     control,
   } = useForm();
+
+  useEffect(() => {
+    setAllImages([...existingImages, ...newImages.map((img) => img.preview)]);
+  }, [existingImages, newImages]);
 
   useEffect(() => {
     const fetchComplaint = async () => {
@@ -227,9 +192,11 @@ const EditComplaint = () => {
               <Select
                 {...field}
                 options={severityOptions}
-                styles={customSelectStyles}
+                styles={customReactSelectStyles}
                 placeholder="Select severity level"
                 isSearchable
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
                 isDisabled={submitting}
               />
             )}
@@ -246,7 +213,11 @@ const EditComplaint = () => {
               <ImagesGrid>
                 {existingImages.map((img, index) => (
                   <ImageWrapper key={`existing-${index}`}>
-                    <ImagePreview src={img} alt={`Existing ${index + 1}`} />
+                    <ImagePreview
+                      src={img}
+                      alt={`Existing ${index + 1}`}
+                      onClick={() => openModal(index)}
+                    />
                     <RemoveImageButton
                       type="button"
                       onClick={() => removeExistingImage(index)}
@@ -279,7 +250,11 @@ const EditComplaint = () => {
             <NewImagesGrid>
               {newImages.map((img, index) => (
                 <ImageWrapper key={`new-${index}`}>
-                  <ImagePreview src={img.preview} alt={`New ${index + 1}`} />
+                  <ImagePreview
+                    src={img.preview}
+                    alt={`New ${index + 1}`}
+                    onClick={() => openModal(existingImages.length + index)}
+                  />
                   <RemoveImageButton
                     type="button"
                     onClick={() => removeNewImage(index)}
@@ -307,6 +282,13 @@ const EditComplaint = () => {
           </Button>
         </ButtonGroup>
       </form>
+      <ImageModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        images={allImages}
+        currentIndex={currentIndex}
+        onNavigate={navigateToImage}
+      />
     </FormPageLayout>
   );
 };

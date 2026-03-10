@@ -1,6 +1,6 @@
 {
-  "name": "civicpulse-frontend",
-  "version": "0.1.0",
+  "name": "civicpulse-client",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",

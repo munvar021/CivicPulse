@@ -96,16 +96,20 @@ const CRUDPageLayout = ({
       setLoading(true);
       const params = { page: currentPage, search: searchTerm, ...filterValues };
       const response = await service.getAll(params);
-      const items =
-        response.data?.items ||
-        response.data?.users ||
-        response.data?.officers ||
-        response.data?.departments ||
-        response.data?.zones ||
-        response.data;
+
+      const items = Array.isArray(response)
+        ? response
+        : response.data?.items ||
+          response.data?.users ||
+          response.data?.officers ||
+          response.data?.departments ||
+          response.data?.zones ||
+          response.data ||
+          [];
+
       setData(Array.isArray(items) ? items : []);
       setTotalPages(response.data?.totalPages || 1);
-      if (onDataFetch) onDataFetch(response.data);
+      if (onDataFetch) onDataFetch(response.data || response);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to fetch data");
       setData([]);

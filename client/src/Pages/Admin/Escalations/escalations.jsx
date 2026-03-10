@@ -3,14 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import TablePageLayout from "../../../components/Layouts/TablePageLayout/tablePageLayout";
+import StatusBadge from "../../../components/StatusBadge/statusBadge";
+import PriorityBadge from "../../../components/PriorityBadge/priorityBadge";
 import adminService from "../../../services/adminService";
-import { getStatusColor, getPriorityColor } from "../../../utils/colorMapper";
-import {
-  StatusBadge,
-  PriorityBadge,
-  ActionButton,
-  DelayBadge,
-} from "./escalationsStyles";
+import { ActionButton, DelayBadge } from "./escalationsStyles";
 
 const Escalations = () => {
   const navigate = useNavigate();
@@ -56,17 +52,13 @@ const Escalations = () => {
     {
       key: "status",
       label: "Status",
-      render: (status) => (
-        <StatusBadge color={getStatusColor(status)}>{status}</StatusBadge>
-      ),
+      render: (status) => <StatusBadge status={status} variant="small" />,
     },
     {
       key: "severity",
       label: "Priority",
       render: (severity) => (
-        <PriorityBadge color={getPriorityColor(severity)}>
-          {severity}
-        </PriorityBadge>
+        <PriorityBadge severity={severity} variant="small" />
       ),
     },
     {

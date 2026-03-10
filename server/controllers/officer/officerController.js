@@ -35,32 +35,36 @@ const getOfficerDashboardData = asyncHandler(async (req, res) => {
     throw new Error("Officer profile not found");
   }
 
-  const [total, inProgress, completed, blocked, activeTasks] = await Promise.all([
-    Complaint.countDocuments({ assignedTo: officerProfile._id }),
-    Complaint.countDocuments({
-      assignedTo: officerProfile._id,
-      status: "in_progress",
-    }),
-    Complaint.countDocuments({
-      assignedTo: officerProfile._id,
-      status: "resolved",
-    }),
-    Complaint.countDocuments({
-      assignedTo: officerProfile._id,
-      status: "blocked",
-    }),
-    Complaint.find({
-      assignedTo: officerProfile._id,
-      status: { $in: ["assigned", "reassigned", "in_progress"] },
-    })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .populate("department", "name")
-      .select("title department location status severity createdAt dueDate")
-      .lean(),
-  ]);
+  const now = new Date();
 
-  res.json({ stats: { total, inProgress, completed, blocked }, activeTasks });
+  const [total, inProgress, completed, delayed, activeTasks] =
+    await Promise.all([
+      Complaint.countDocuments({ assignedTo: officerProfile._id }),
+      Complaint.countDocuments({
+        assignedTo: officerProfile._id,
+        status: "in_progress",
+      }),
+      Complaint.countDocuments({
+        assignedTo: officerProfile._id,
+        status: "resolved",
+      }),
+      Complaint.countDocuments({
+        assignedTo: officerProfile._id,
+        status: { $nin: ["resolved", "closed"] },
+        dueDate: { $lt: now },
+      }),
+      Complaint.find({
+        assignedTo: officerProfile._id,
+        status: { $in: ["assigned", "reassigned", "in_progress"] },
+      })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate("department", "name")
+        .select("title department location status severity createdAt dueDate")
+        .lean(),
+    ]);
+
+  res.json({ stats: { total, inProgress, completed, delayed }, activeTasks });
 });
 
 const getOfficerActiveTasks = asyncHandler(async (req, res) => {
@@ -100,6 +104,7 @@ const getOfficerProfile = asyncHandler(async (req, res) => {
     totalAssigned,
     completedComplaints,
     inProgressComplaints,
+    delayedComplaints,
     resolvedWithRatings,
   ] = await Promise.all([
     Complaint.countDocuments({ assignedTo: officer._id }),
@@ -107,6 +112,11 @@ const getOfficerProfile = asyncHandler(async (req, res) => {
     Complaint.countDocuments({
       assignedTo: officer._id,
       status: "in_progress",
+    }),
+    Complaint.countDocuments({
+      assignedTo: officer._id,
+      status: { $nin: ["resolved", "closed"] },
+      dueDate: { $lt: new Date() },
     }),
     Complaint.find({
       assignedTo: officer._id,
@@ -137,6 +147,7 @@ const getOfficerProfile = asyncHandler(async (req, res) => {
       total: totalAssigned,
       completed: completedComplaints,
       inProgress: inProgressComplaints,
+      delayed: delayedComplaints,
       avgRating: parseFloat(avgRating),
     },
   });
@@ -258,7 +269,12 @@ const getOfficerAssignedTasks = asyncHandler(async (req, res) => {
   const query = { assignedTo: officerProfile._id };
 
   if (status && status !== "all") {
-    query.status = status;
+    if (status === "delayed") {
+      query.status = { $nin: ["resolved", "closed"] };
+      query.dueDate = { $lt: new Date() };
+    } else {
+      query.status = status;
+    }
   }
 
   const skip = (page - 1) * limit;

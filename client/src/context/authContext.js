@@ -6,6 +6,7 @@ import {
   logout as logoutAction,
   fetchCurrentUser,
 } from "../store/slices/authSlice";
+import { getStoredToken } from "../utils/authStorage";
 
 const AuthContext = createContext();
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     if (hasCheckedAuth.current) return;
 
     hasCheckedAuth.current = true;
-    const token = localStorage.getItem("token");
+    const token = getStoredToken();
 
     if (token && !user) {
       dispatch(fetchCurrentUser());

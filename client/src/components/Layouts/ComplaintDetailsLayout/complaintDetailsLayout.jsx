@@ -21,6 +21,8 @@ import ConfirmationModal from "../../ConfirmationModal/confirmationModal";
 import Button from "../../Button/button";
 import StatusBadge from "../../StatusBadge/statusBadge";
 import PriorityBadge from "../../PriorityBadge/priorityBadge";
+import ImageModal from "../../ImageModal/imageModal";
+import { useImageModal } from "../../../hooks/useImageModal";
 import { useAuth } from "../../../context/authContext";
 import { formatDate } from "../../../utils/dateFormatter";
 import citizenService from "../../../services/citizenService";
@@ -87,6 +89,8 @@ const ComplaintDetailsLayout = ({
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const { isOpen, currentIndex, openModal, closeModal, navigateToImage } =
+    useImageModal(complaint?.images || []);
 
   const getService = () => {
     switch (role) {
@@ -438,6 +442,7 @@ const ComplaintDetailsLayout = ({
                     key={index}
                     src={image}
                     alt={`Complaint ${index + 1}`}
+                    onClick={() => openModal(index)}
                   />
                 ))}
               </ImageGrid>
@@ -610,6 +615,14 @@ const ComplaintDetailsLayout = ({
           message="Are you sure you want to delete this complaint? This action cannot be undone."
           type="delete"
           isLoading={isDeleting}
+        />
+
+        <ImageModal
+          isOpen={isOpen}
+          onClose={closeModal}
+          images={complaint?.images || []}
+          currentIndex={currentIndex}
+          onNavigate={navigateToImage}
         />
       </PageContainer>
     </>

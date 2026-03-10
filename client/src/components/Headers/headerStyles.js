@@ -76,7 +76,16 @@ export const Logo = styled.div`
 
 export const Nav = styled.nav`
   display: ${({ $desktop }) => ($desktop ? "flex" : "flex")};
-  gap: 2rem;
+  gap: 1.5rem;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (max-width: 1024px) {
     display: ${({ $desktop }) => ($desktop ? "none" : "flex")};
@@ -84,6 +93,7 @@ export const Nav = styled.nav`
     align-items: center;
     gap: 0.75rem;
     width: 100%;
+    overflow-x: visible;
   }
 `;
 
@@ -99,10 +109,11 @@ export const NavItem = styled.button`
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 1rem;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  white-space: nowrap;
 
   &:hover {
     color: ${theme.colors.text.primary};

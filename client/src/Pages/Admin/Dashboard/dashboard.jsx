@@ -10,13 +10,23 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
-  const { admin: dashboardData, loading, error } = useSelector((state) => state.dashboard);
+  const {
+    admin: dashboardData,
+    loading,
+    error,
+  } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
     dispatch(fetchAdminDashboard());
   }, [dispatch]);
 
-  const stats = dashboardData?.stats || { pending: 0, reassigned: 0, inProgress: 0, resolved: 0, delayed: 0 };
+  const stats = dashboardData?.stats || {
+    pending: 0,
+    reassigned: 0,
+    inProgress: 0,
+    resolved: 0,
+    delayed: 0,
+  };
   const recentComplaints = dashboardData?.recentComplaints || [];
 
   return (

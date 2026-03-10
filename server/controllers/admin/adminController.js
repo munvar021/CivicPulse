@@ -223,11 +223,17 @@ const getAdminDashboardData = asyncHandler(async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(5)
         .populate("citizen", "name")
-        .select("title description status priority createdAt")
+        .populate("department", "name")
+        .select(
+          "title description status severity priority category location createdAt",
+        )
         .lean(),
     ]);
 
-  res.json({ stats: { pending, reassigned, inProgress, resolved, delayed }, recentComplaints });
+  res.json({
+    stats: { pending, reassigned, inProgress, resolved, delayed },
+    recentComplaints,
+  });
 });
 
 const getRecentComplaints = asyncHandler(async (req, res) => {
@@ -242,7 +248,10 @@ const getRecentComplaints = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(5)
     .populate("citizen", "name")
-    .select("title description status priority createdAt")
+    .populate("department", "name")
+    .select(
+      "title description status severity priority category location createdAt",
+    )
     .lean();
 
   res.json(recentComplaints);

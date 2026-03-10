@@ -191,10 +191,11 @@ export const TimelineImage = styled.img`
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 
   &:hover {
     transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
 
   @media (max-width: 768px) {

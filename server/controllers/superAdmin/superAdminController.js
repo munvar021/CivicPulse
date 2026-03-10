@@ -60,14 +60,6 @@ const authSuperAdmin = asyncHandler(async (req, res) => {
 
 const getSuperAdminDashboardData = asyncHandler(async (req, res) => {
   const now = new Date();
-  const resolutionTimelines = await Setting.findOne({
-    key: "resolutionTimelines",
-  }).lean();
-  const timelines = resolutionTimelines?.value || {
-    high: 24,
-    medium: 72,
-    low: 168,
-  };
 
   const [
     totalComplaints,
@@ -82,31 +74,8 @@ const getSuperAdminDashboardData = asyncHandler(async (req, res) => {
     Complaint.countDocuments({ status: "in_progress" }),
     Complaint.countDocuments({ status: "resolved" }),
     Complaint.countDocuments({
-      status: { $in: ["pending", "in_progress", "assigned"] },
-      $expr: {
-        $gt: [
-          { $subtract: [now, "$createdAt"] },
-          {
-            $switch: {
-              branches: [
-                {
-                  case: { $eq: ["$severity", "high"] },
-                  then: timelines.high * 60 * 60 * 1000,
-                },
-                {
-                  case: { $eq: ["$severity", "medium"] },
-                  then: timelines.medium * 60 * 60 * 1000,
-                },
-                {
-                  case: { $eq: ["$severity", "low"] },
-                  then: timelines.low * 60 * 60 * 1000,
-                },
-              ],
-              default: timelines.medium * 60 * 60 * 1000,
-            },
-          },
-        ],
-      },
+      status: { $nin: ["resolved", "closed"] },
+      dueDate: { $exists: true, $lt: now },
     }),
     Complaint.find().sort({ createdAt: -1 }).limit(5).lean(),
   ]);
