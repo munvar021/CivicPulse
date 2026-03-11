@@ -24,11 +24,13 @@ const getComplaintById = (id) => {
   return api.get(`/complaints/${id}`);
 };
 
-const getNearbyComplaints = (latitude, longitude, radius) => {
+const getNearbyComplaints = (latitude, longitude, radius, page = 1) => {
   const params = new URLSearchParams();
   if (latitude) params.append("latitude", latitude);
   if (longitude) params.append("longitude", longitude);
   if (radius) params.append("radius", radius);
+  params.append("page", page);
+  params.append("limit", 10);
   return api.get(`/complaints/nearby?${params.toString()}`);
 };
 

@@ -137,6 +137,10 @@ const getCitizenDashboardData = asyncHandler(async (req, res) => {
       Complaint.find({ citizen: citizenId })
         .sort({ createdAt: -1 })
         .limit(5)
+        .populate("department", "name")
+        .select(
+          "title description status severity priority category location createdAt dueDate department",
+        )
         .lean(),
     ]);
 

@@ -77,7 +77,14 @@ const getSuperAdminDashboardData = asyncHandler(async (req, res) => {
       status: { $nin: ["resolved", "closed"] },
       dueDate: { $exists: true, $lt: now },
     }),
-    Complaint.find().sort({ createdAt: -1 }).limit(5).lean(),
+    Complaint.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("department", "name")
+      .select(
+        "title description status severity priority category location createdAt dueDate department",
+      )
+      .lean(),
   ]);
 
   res.json({

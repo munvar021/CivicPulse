@@ -1,44 +1,69 @@
-const asyncHandler = require('express-async-handler');
-const Complaint = require('../../models/general/Complaint');
-const Citizen = require('../../models/citizen/Citizen');
-const { uploadMultipleToCloudinary, deleteFromCloudinary } = require('../../utils/cloudinaryHelper');
-const { buildComplaintQuery, getPaginationParams } = require('../../utils/queryHelper');
+const asyncHandler = require("express-async-handler");
+const Complaint = require("../../models/general/Complaint");
+const Citizen = require("../../models/citizen/Citizen");
+const {
+  uploadMultipleToCloudinary,
+  deleteFromCloudinary,
+} = require("../../utils/cloudinaryHelper");
+const {
+  buildComplaintQuery,
+  getPaginationParams,
+} = require("../../utils/queryHelper");
 
 const getAllComplaints = asyncHandler(async (req, res) => {
   const { status, priority, department } = req.query;
   const query = buildComplaintQuery({}, { status, priority, department });
-  
+
   const complaints = await Complaint.find(query)
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
-    .populate('assignedTo', 'name email')
+    .populate("citizen", "name email")
+    .populate("department", "name")
+    .populate("assignedTo", "name email")
     .sort({ createdAt: -1 })
     .lean();
-  
+
   res.json(complaints);
 });
 
 const createComplaint = asyncHandler(async (req, res) => {
-  const { title, description, latitude, longitude, address, severity, category, department } = req.body;
+  const {
+    title,
+    description,
+    latitude,
+    longitude,
+    address,
+    severity,
+    category,
+    department,
+  } = req.body;
 
-  if (!title || !description || !latitude || !longitude || !address || !category) {
+  if (
+    !title ||
+    !description ||
+    !latitude ||
+    !longitude ||
+    !address ||
+    !category
+  ) {
     res.status(400);
-    throw new Error('Please include all required fields for the complaint.');
+    throw new Error("Please include all required fields for the complaint.");
   }
 
   const citizen = await Citizen.findOne({ email: req.user.email }).lean();
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
 
   let uploadedImageUrls = [];
   if (req.files?.length > 0) {
     try {
-      uploadedImageUrls = await uploadMultipleToCloudinary(req.files, 'civicpulse_complaints');
+      uploadedImageUrls = await uploadMultipleToCloudinary(
+        req.files,
+        "civicpulse_complaints",
+      );
     } catch (uploadError) {
       res.status(500);
-      throw new Error('Failed to upload images. Please try again.');
+      throw new Error("Failed to upload images. Please try again.");
     }
   }
 
@@ -48,7 +73,7 @@ const createComplaint = asyncHandler(async (req, res) => {
     description,
     category,
     location: {
-      type: 'Point',
+      type: "Point",
       coordinates: [parseFloat(longitude), parseFloat(latitude)],
       address,
     },
@@ -64,111 +89,131 @@ const getMyComplaints = asyncHandler(async (req, res) => {
   const citizen = await Citizen.findOne({ email: req.user.email }).lean();
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
-  
+
   const complaints = await Complaint.find({ citizen: citizen._id })
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
-    .populate('assignedTo', 'name email')
+    .populate("citizen", "name email")
+    .populate("department", "name")
+    .populate("assignedTo", "name email")
     .sort({ createdAt: -1 })
     .lean();
-  
+
   res.json(complaints);
 });
 
 const getComplaintById = asyncHandler(async (req, res) => {
   const complaint = await Complaint.findById(req.params.id)
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
+    .populate("citizen", "name email")
+    .populate("department", "name")
     .populate({
-      path: 'assignedTo',
-      populate: { path: 'department', select: 'name' }
+      path: "assignedTo",
+      populate: { path: "department", select: "name" },
     })
-    .populate('progressUpdates.updatedBy', 'name employeeId')
-    .populate('timeline.updatedBy', 'name employeeId')
-    .populate('timeline.metadata.fromOfficer', 'name employeeId')
-    .populate('timeline.metadata.toOfficer', 'name employeeId')
+    .populate("progressUpdates.updatedBy", "name employeeId")
+    .populate("timeline.updatedBy", "name employeeId")
+    .populate("timeline.metadata.fromOfficer", "name employeeId")
+    .populate("timeline.metadata.toOfficer", "name employeeId")
     .lean();
 
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
 
-  if (req.user.role === 'superAdmin') {
+  if (req.user.role === "superAdmin") {
     return res.json(complaint);
   }
 
   const citizen = await Citizen.findOne({ email: req.user.email }).lean();
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
 
-  if (!complaint.citizen || complaint.citizen._id.toString() !== citizen._id.toString()) {
+  if (
+    !complaint.citizen ||
+    complaint.citizen._id.toString() !== citizen._id.toString()
+  ) {
     res.status(401);
-    throw new Error('Not authorized to view this complaint');
+    throw new Error("Not authorized to view this complaint");
   }
 
   res.json(complaint);
 });
 
 const getNearbyComplaints = asyncHandler(async (req, res) => {
-  const { latitude, longitude, radius } = req.query;
+  const { latitude, longitude, radius, page = 1, limit = 10 } = req.query;
 
   if (!latitude || !longitude) {
     res.status(400);
-    throw new Error('Please provide latitude and longitude for nearby search.');
+    throw new Error("Please provide latitude and longitude for nearby search.");
   }
 
   const queryRadius = radius ? parseFloat(radius) * 1000 : 10000;
+  const skip = (parseInt(page) - 1) * parseInt(limit);
 
-  const complaints = await Complaint.find({
+  const query = {
     location: {
       $geoWithin: {
-        $centerSphere: [[parseFloat(longitude), parseFloat(latitude)], queryRadius / 6378.1],
+        $centerSphere: [
+          [parseFloat(longitude), parseFloat(latitude)],
+          queryRadius / 6378.1,
+        ],
       },
     },
-  })
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
-    .sort({ createdAt: -1 })
-    .lean();
+    status: { $nin: ["resolved", "closed"] },
+  };
 
-  res.json(complaints);
+  const [complaints, total] = await Promise.all([
+    Complaint.find(query)
+      .populate("citizen", "name email")
+      .populate("department", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean(),
+    Complaint.countDocuments(query),
+  ]);
+
+  res.json({
+    complaints,
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(total / parseInt(limit)),
+    total,
+  });
 });
 
 const submitFeedback = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
-  
+
   const [complaint, citizen] = await Promise.all([
     Complaint.findById(req.params.id),
-    Citizen.findOne({ email: req.user.email }).lean()
+    Citizen.findOne({ email: req.user.email }).lean(),
   ]);
 
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
 
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
 
   if (complaint.citizen.toString() !== citizen._id.toString()) {
     res.status(401);
-    throw new Error('Not authorized to give feedback for this complaint');
+    throw new Error("Not authorized to give feedback for this complaint");
   }
 
-  if (complaint.status !== 'resolved') {
+  if (complaint.status !== "resolved") {
     res.status(400);
-    throw new Error('Feedback can only be submitted for resolved complaints.');
+    throw new Error("Feedback can only be submitted for resolved complaints.");
   }
 
   complaint.feedback = { rating, comment };
-  complaint.status = 'closed';
+  complaint.status = "closed";
   await complaint.save();
 
   res.json(complaint);
@@ -177,30 +222,30 @@ const submitFeedback = asyncHandler(async (req, res) => {
 const reopenComplaint = asyncHandler(async (req, res) => {
   const [complaint, citizen] = await Promise.all([
     Complaint.findById(req.params.id),
-    Citizen.findOne({ email: req.user.email }).lean()
+    Citizen.findOne({ email: req.user.email }).lean(),
   ]);
 
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
 
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
 
   if (complaint.citizen.toString() !== citizen._id.toString()) {
     res.status(401);
-    throw new Error('Not authorized to reopen this complaint');
+    throw new Error("Not authorized to reopen this complaint");
   }
 
-  if (complaint.status !== 'resolved' && complaint.status !== 'closed') {
+  if (complaint.status !== "resolved" && complaint.status !== "closed") {
     res.status(400);
-    throw new Error('Only resolved or closed complaints can be reopened.');
+    throw new Error("Only resolved or closed complaints can be reopened.");
   }
 
-  complaint.status = 'pending';
+  complaint.status = "pending";
   complaint.resolutionDetails = undefined;
   complaint.resolutionDate = undefined;
   complaint.feedback = undefined;
@@ -213,27 +258,27 @@ const reopenComplaint = asyncHandler(async (req, res) => {
 const updateComplaint = asyncHandler(async (req, res) => {
   const [complaint, citizen] = await Promise.all([
     Complaint.findById(req.params.id),
-    Citizen.findOne({ email: req.user.email }).lean()
+    Citizen.findOne({ email: req.user.email }).lean(),
   ]);
 
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
 
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
 
   if (complaint.citizen.toString() !== citizen._id.toString()) {
     res.status(401);
-    throw new Error('Not authorized to update this complaint');
+    throw new Error("Not authorized to update this complaint");
   }
 
-  if (complaint.status !== 'pending') {
+  if (complaint.status !== "pending") {
     res.status(400);
-    throw new Error('Only pending complaints can be updated.');
+    throw new Error("Only pending complaints can be updated.");
   }
 
   const { title, description, severity, removedImages } = req.body;
@@ -244,25 +289,39 @@ const updateComplaint = asyncHandler(async (req, res) => {
   complaint.severity = severity || complaint.severity;
 
   // Update timeline description if description changed
-  if (description && description !== oldDescription && complaint.timeline[0]?.eventType === 'submitted') {
+  if (
+    description &&
+    description !== oldDescription &&
+    complaint.timeline[0]?.eventType === "submitted"
+  ) {
     complaint.timeline[0].description = description;
   }
 
   if (removedImages) {
-    const removedImagesArray = typeof removedImages === 'string' ? JSON.parse(removedImages) : removedImages;
+    const removedImagesArray =
+      typeof removedImages === "string"
+        ? JSON.parse(removedImages)
+        : removedImages;
     if (Array.isArray(removedImagesArray)) {
-      await Promise.all(removedImagesArray.map(imageUrl => deleteFromCloudinary(imageUrl)));
-      complaint.images = complaint.images.filter(img => !removedImagesArray.includes(img));
+      await Promise.all(
+        removedImagesArray.map((imageUrl) => deleteFromCloudinary(imageUrl)),
+      );
+      complaint.images = complaint.images.filter(
+        (img) => !removedImagesArray.includes(img),
+      );
     }
   }
 
   if (req.files?.length > 0) {
     try {
-      const uploadedImageUrls = await uploadMultipleToCloudinary(req.files, 'civicpulse_complaints');
+      const uploadedImageUrls = await uploadMultipleToCloudinary(
+        req.files,
+        "civicpulse_complaints",
+      );
       complaint.images = [...complaint.images, ...uploadedImageUrls];
     } catch (uploadError) {
       res.status(500);
-      throw new Error('Failed to upload images. Please try again.');
+      throw new Error("Failed to upload images. Please try again.");
     }
   }
 
@@ -273,54 +332,56 @@ const updateComplaint = asyncHandler(async (req, res) => {
 const deleteComplaint = asyncHandler(async (req, res) => {
   const [complaint, citizen] = await Promise.all([
     Complaint.findById(req.params.id),
-    Citizen.findOne({ email: req.user.email }).lean()
+    Citizen.findOne({ email: req.user.email }).lean(),
   ]);
 
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
 
   if (!citizen) {
     res.status(404);
-    throw new Error('Citizen not found');
+    throw new Error("Citizen not found");
   }
 
   if (complaint.citizen.toString() !== citizen._id.toString()) {
     res.status(401);
-    throw new Error('Not authorized to delete this complaint');
+    throw new Error("Not authorized to delete this complaint");
   }
 
-  if (complaint.status !== 'pending') {
+  if (complaint.status !== "pending") {
     res.status(400);
-    throw new Error('Only pending complaints can be deleted.');
+    throw new Error("Only pending complaints can be deleted.");
   }
 
   if (complaint.images?.length > 0) {
-    await Promise.all(complaint.images.map(imageUrl => deleteFromCloudinary(imageUrl)));
+    await Promise.all(
+      complaint.images.map((imageUrl) => deleteFromCloudinary(imageUrl)),
+    );
   }
 
   await complaint.deleteOne();
-  res.json({ message: 'Complaint deleted successfully' });
+  res.json({ message: "Complaint deleted successfully" });
 });
 
 const getNearbyComplaintById = asyncHandler(async (req, res) => {
   const complaint = await Complaint.findById(req.params.id)
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
+    .populate("citizen", "name email")
+    .populate("department", "name")
     .populate({
-      path: 'assignedTo',
-      populate: { path: 'department', select: 'name' }
+      path: "assignedTo",
+      populate: { path: "department", select: "name" },
     })
-    .populate('progressUpdates.updatedBy', 'name employeeId')
-    .populate('timeline.updatedBy', 'name employeeId')
-    .populate('timeline.metadata.fromOfficer', 'name employeeId')
-    .populate('timeline.metadata.toOfficer', 'name employeeId')
+    .populate("progressUpdates.updatedBy", "name employeeId")
+    .populate("timeline.updatedBy", "name employeeId")
+    .populate("timeline.metadata.fromOfficer", "name employeeId")
+    .populate("timeline.metadata.toOfficer", "name employeeId")
     .lean();
 
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
 
   res.json(complaint);
@@ -328,67 +389,69 @@ const getNearbyComplaintById = asyncHandler(async (req, res) => {
 
 const assignComplaint = asyncHandler(async (req, res) => {
   const { officerId, dueDate } = req.body;
-  
+
   const complaint = await Complaint.findById(req.params.id);
-  
+
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
-  
+
   complaint.assignedTo = officerId;
   complaint.dueDate = dueDate;
-  complaint.status = 'assigned';
-  
+  complaint.status = "assigned";
+
   await complaint.save();
-  
+
   const updatedComplaint = await Complaint.findById(req.params.id)
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
+    .populate("citizen", "name email")
+    .populate("department", "name")
     .populate({
-      path: 'assignedTo',
-      populate: { path: 'department', select: 'name' }
+      path: "assignedTo",
+      populate: { path: "department", select: "name" },
     });
-  
+
   res.json(updatedComplaint);
 });
 
 const reassignComplaint = asyncHandler(async (req, res) => {
   const { officerId, reason, dueDate } = req.body;
-  
+
   const [complaint, Officer, SuperAdmin] = await Promise.all([
     Complaint.findById(req.params.id),
-    require('../../models/officer/Officer'),
-    require('../../models/superAdmin/SuperAdmin')
+    require("../../models/officer/Officer"),
+    require("../../models/superAdmin/SuperAdmin"),
   ]);
-  
+
   if (!complaint) {
     res.status(404);
-    throw new Error('Complaint not found');
+    throw new Error("Complaint not found");
   }
-  
+
   const newOfficer = await Officer.findById(officerId).lean();
   const previousOfficer = complaint.assignedTo;
-  const superAdminProfile = await SuperAdmin.findOne({ email: req.user.email }).select('_id name').lean();
-  
+  const superAdminProfile = await SuperAdmin.findOne({ email: req.user.email })
+    .select("_id name")
+    .lean();
+
   complaint.assignedTo = officerId;
   complaint.dueDate = dueDate;
-  complaint.status = 'reassigned';
-  
+  complaint.status = "reassigned";
+
   complaint.progressUpdates.unshift({
-    status: 'reassigned',
+    status: "reassigned",
     message: `Reassigned by Super Admin`,
-    remarks: `Assigned to: ${newOfficer?.name || 'Officer'}\nDue date: ${new Date(dueDate).toLocaleDateString()}\nReason: ${reason}`,
+    remarks: `Assigned to: ${newOfficer?.name || "Officer"}\nDue date: ${new Date(dueDate).toLocaleDateString()}\nReason: ${reason}`,
     updatedBy: req.user._id,
     previousOfficer: previousOfficer,
   });
-  
+
   complaint.timeline.unshift({
-    eventType: 'reassigned',
-    status: 'reassigned',
-    description: reason || 'Area reassignment',
+    eventType: "reassigned",
+    status: "reassigned",
+    description: reason || "Area reassignment",
     updatedBy: superAdminProfile?._id || req.user._id,
-    updatedByModel: 'SuperAdmin',
+    updatedByModel: "SuperAdmin",
     metadata: {
       fromOfficer: previousOfficer,
       toOfficer: officerId,
@@ -396,19 +459,19 @@ const reassignComplaint = asyncHandler(async (req, res) => {
     },
     date: new Date(),
   });
-  
+
   await complaint.save();
-  
+
   const updatedComplaint = await Complaint.findById(req.params.id)
-    .populate('citizen', 'name email')
-    .populate('department', 'name')
+    .populate("citizen", "name email")
+    .populate("department", "name")
     .populate({
-      path: 'assignedTo',
-      populate: { path: 'department', select: 'name' }
+      path: "assignedTo",
+      populate: { path: "department", select: "name" },
     })
-    .populate('progressUpdates.updatedBy', 'name')
+    .populate("progressUpdates.updatedBy", "name")
     .lean();
-  
+
   res.json(updatedComplaint);
 });
 

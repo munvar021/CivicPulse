@@ -5,6 +5,7 @@ import Map from "../../../components/Map/map";
 import Loader from "../../../components/Loaders/loader";
 import StatusBadge from "../../../components/StatusBadge/statusBadge";
 import PriorityBadge from "../../../components/PriorityBadge/priorityBadge";
+import Pagination from "../../../components/Pagination/pagination";
 import { useAuth } from "../../../context/authContext";
 import citizenService from "../../../services/citizenService";
 import {
@@ -26,6 +27,8 @@ const NearbyIssues = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState("");
   const [loadingIssues, setLoadingIssues] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const { user: authUser } = useAuth();
 
   useEffect(() => {
@@ -59,8 +62,10 @@ const NearbyIssues = () => {
           userLocation.lat,
           userLocation.lng,
           10,
+          currentPage,
         );
-        setNearbyIssues(data);
+        setNearbyIssues(data.complaints || []);
+        setTotalPages(data.totalPages || 1);
       } catch (err) {
         setError(
           err.response?.data?.message || "Failed to fetch nearby issues.",
@@ -71,7 +76,7 @@ const NearbyIssues = () => {
     };
 
     getAndSetNearbyComplaints();
-  }, [authUser, userLocation]);
+  }, [authUser, userLocation, currentPage]);
 
   if (error) {
     return (
@@ -158,6 +163,14 @@ const NearbyIssues = () => {
               ))}
             </tbody>
           </Table>
+        )}
+
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         )}
       </PageContainer>
     </>
