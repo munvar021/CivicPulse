@@ -46,7 +46,6 @@ node_modules
 
 # misc
 *.orig
-package-lock.json
 
 # System Files
 .DS_Store
