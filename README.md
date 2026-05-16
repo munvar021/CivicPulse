@@ -1,587 +1,448 @@
-# CivicPulse 🏛️
+# CivicPulse
 
 <div align="center">
-  <img src="./client/public/favicon.ico" alt="CivicPulse Logo" width="200" height="200">
-  
+  <img src="./client/public/favicon.ico" alt="CivicPulse Logo" width="120" height="120">
+
   **A Modern Civic Complaint Management System**
-  
+
   *Empowering citizens, streamlining governance, building better communities*
 
-[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-6.x-green.svg)](https://mongodb.com/)
+[![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)](https://mongodb.com/)
+[![Deployed on Vercel](https://img.shields.io/badge/Client-Vercel-000000?logo=vercel)](https://vercel.com/)
+[![Deployed on Render](https://img.shields.io/badge/Server-Render-46E3B7?logo=render)](https://render.com/)
 [![License](https://img.shields.io/badge/License-Private-red.svg)](LICENSE)
 
 </div>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Quick Start](#-quick-start)
-- [User Roles](#-user-roles)
-- [API Documentation](#-api-documentation)
-- [Development](#-development)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [License](#-license)
-
----
-
-## 🌟 Overview
-
-CivicPulse is a comprehensive civic complaint management system designed to bridge the gap between citizens and government services. Built with modern web technologies and featuring a stunning liquid glass UI design, it provides an intuitive platform for reporting, tracking, and resolving civic issues efficiently.
-
-### 🎯 Mission
-
-To create transparent, accountable, and efficient civic governance through technology-driven citizen engagement.
-
-### 🚀 Vision
-
-A world where every citizen has a voice in their community's development and every civic issue is addressed promptly and transparently.
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Make Commands](#make-commands)
+- [Docker (Local Dev)](#docker-local-dev)
+- [User Roles](#user-roles)
+- [Deployment](#deployment)
+- [Environment Variables](#environment-variables)
+- [GitHub Secrets](#github-secrets)
+- [API Overview](#api-overview)
 
 ---
 
-## ✨ Features
+## Overview
 
-### 🏠 **Citizen Portal**
+CivicPulse is a full-stack civic complaint management system that bridges the gap between citizens and government services. Citizens report issues, field officers resolve them, department admins oversee their zone, and a super admin manages the entire system.
 
-- 📍 **Location-Based Reporting**: Report issues with precise GPS coordinates
-- 📸 **Image Upload**: Attach up to 5 photos for better issue documentation
-- 🔍 **Nearby Issues**: Discover and track community problems
-- 📊 **Progress Tracking**: Real-time status updates with timeline
-- 💬 **Feedback System**: Rate and review completed work
-- 📱 **Mobile Responsive**: Seamless experience across all devices
-- 🔐 **Self-Registration**: Citizens can register independently with sequential ID (CZ-XXXXXX)
-- 🖼️ **Image Modal**: Click any image to view in full-screen modal with navigation
-
-### 👮 **Field Officer Portal**
-
-- 📋 **Task Dashboard**: Prioritized task management interface
-- 🔄 **Status Updates**: Real-time progress reporting with images
-- 📷 **Proof of Work**: Upload completion evidence (up to 5 images)
-- 📈 **Performance Analytics**: Track work history and statistics
-- 🎯 **Priority Management**: Focus on high-priority issues first
-- ⏰ **Due Date Tracking**: Monitor deadlines and overdue tasks
-
-### 🏢 **Department Admin Portal**
-
-- 📊 **Analytics Dashboard**: Comprehensive performance metrics
-- 👥 **Officer Management**: Create and manage field officer accounts
-- 🎯 **Assignment System**: Intelligent task distribution with due dates
-- 📈 **Reporting Tools**: Generate detailed performance reports
-- ⚠️ **Escalation Management**: Handle overdue and critical issues
-- ✅ **Verification**: Verify resolved complaints
-- 🔄 **Reassignment**: Reassign tasks with reason tracking
-
-### 🔧 **Super Admin Portal**
-
-- 🌐 **System Overview**: City-wide analytics and monitoring
-- 👤 **User Management**: Complete user lifecycle management
-- 🏛️ **Department Setup**: Configure departments and zones
-- ⚙️ **System Settings**: Global configuration management
-- 📊 **Global Reports**: Export system-wide data and insights (CSV)
-- 🔐 **Secure Access**: Hidden portal with multi-layer security
-- 🔑 **Access Code Protection**: Requires secret code validation (frontend + backend)
-- 📍 **Zone Management**: Geographic zone configuration with GeoJSON
-- ✅ **Verification**: Verify resolved complaints
+**Live deployments:**
+- Client → Vercel (React SPA)
+- Server → Render (Express API + PM2)
+- Database → MongoDB Atlas
+- Images → Cloudinary
 
 ---
 
-## 🏗️ Architecture
+## Features
 
-```mermaid
-graph TB
-    A[Citizens] --> B[React Frontend]
-    C[Officers] --> B
-    D[Admins] --> B
-    E[Super Admins] --> B
+### Citizen Portal
+- Location-based issue reporting with GPS coordinates
+- Attach up to 5 photos per complaint
+- Nearby issues map (Leaflet.js)
+- Real-time status tracking with timeline
+- Resolution feedback and rating
+- Self-registration with sequential ID (`CZ-XXXXXX`)
 
-    B --> F[Node.js API Server]
-    F --> G[MongoDB Database]
-    F --> H[Cloudinary Storage]
+### Field Officer Portal
+- Prioritized task dashboard
+- Progress updates with proof-of-work images
+- Work history and performance stats
+- Due date tracking
 
-    I[Authentication] --> F
-    J[File Upload] --> H
-    K[Geolocation] --> F
-    L[Real-time Updates] --> F
+### Department Admin Portal
+- Complaint assignment with due dates
+- Officer management (create / update / delete)
+- Reassignment with reason tracking
+- Escalation management
+- Department performance reports (CSV export)
+- Resolution verification
+
+### Super Admin Portal
+- System-wide analytics and monitoring
+- User lifecycle management across all roles
+- Department and zone (GeoJSON) configuration
+- Global reports and CSV export
+- System settings management
+- Hidden portal URL with access-code security
+
+---
+
+## Architecture
+
+```
+Citizens / Officers / Admins / SuperAdmins
+               │
+        React SPA (Vercel)
+               │  HTTPS + Bearer token
+      Express API (Render + PM2)
+         │              │
+   MongoDB Atlas     Cloudinary
 ```
 
-### 🔧 System Components
-
-- **Frontend**: React 18 with liquid glass UI design and Redux state management
-- **Backend**: Node.js with Express.js framework
-- **Database**: MongoDB with Mongoose ODM and atomic counters
-- **Storage**: Cloudinary for image management
-- **Authentication**: JWT with role-based access control
-- **Maps**: Leaflet.js for interactive mapping
-- **State Management**: Redux Toolkit with optimized caching (60-70% fewer API calls)
+**Key design decisions:**
+- JWT stored in `localStorage` / `sessionStorage` and sent as `Authorization: Bearer` header — works across Vercel ↔ Render domains
+- Cookie auth is a secondary fallback (HttpOnly, `SameSite: none`, `Secure` in production)
+- PM2 in `fork` mode with `max_memory_restart: 450M` on Render's free 512 MB tier
+- Redux Toolkit caching cuts API calls by ~60–70 %
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 ### Frontend
 
-| Technology        | Version | Purpose                      |
-| ----------------- | ------- | ---------------------------- |
-| React             | 18.2.0  | UI Framework                 |
-| React Router      | 6.8.0   | Client-side routing          |
-| Redux Toolkit     | 2.11.2  | State management             |
-| React Redux       | 9.2.0   | Redux bindings               |
-| React Hook Form   | 7.71.1  | Form management & validation |
-| Styled Components | 6.3.8   | CSS-in-JS styling            |
-| Axios             | 1.3.0   | HTTP client                  |
-| Leaflet.js        | 1.9.3   | Interactive maps             |
-| React Leaflet     | 4.2.0   | React bindings for Leaflet   |
-| Framer Motion     | 12.34.0 | Animations                   |
-| React Toastify    | 11.0.5  | Toast notifications          |
-| React Select      | 5.10.2  | Enhanced dropdowns           |
-| Font Awesome      | 7.1.0   | Icon library                 |
+| Package | Version | Purpose |
+|---|---|---|
+| React | 18.2.0 | UI framework |
+| React Router DOM | 6.8.0 | Client-side routing |
+| Redux Toolkit | 2.11.2 | State management |
+| React Hook Form | 7.71.1 | Form validation |
+| Styled Components | 6.3.8 | CSS-in-JS |
+| Axios | 1.3.0 | HTTP client |
+| Leaflet / React Leaflet | 1.9.3 / 4.2.0 | Interactive maps |
+| Framer Motion | 12.34.0 | Animations |
+| React Toastify | 11.0.5 | Toast notifications |
+| React Select | 5.10.2 | Enhanced dropdowns |
+| Font Awesome | 7.1.0 | Icons |
 
 ### Backend
 
-| Technology    | Version | Purpose                  |
-| ------------- | ------- | ------------------------ |
-| Node.js       | 18.x    | Runtime environment      |
-| Express.js    | 4.18.2  | Web framework            |
-| MongoDB       | 8.0.4   | Database (Mongoose ODM)  |
-| JWT           | 9.0.2   | Authentication           |
-| Cloudinary    | 2.9.0   | Image storage & delivery |
-| Multer        | 2.0.2   | File upload middleware   |
-| Bcrypt.js     | 2.4.3   | Password hashing         |
-| CSV Stringify | 6.6.0   | CSV export functionality |
+| Package | Version | Purpose |
+|---|---|---|
+| Node.js | 20.x | Runtime |
+| Express | 4.18.2 | Web framework |
+| Mongoose | 8.0.4 | MongoDB ODM |
+| jsonwebtoken | 9.0.2 | JWT auth |
+| bcryptjs | 2.4.3 | Password hashing |
+| Cloudinary | 2.9.0 | Image storage |
+| Multer | 2.0.2 | File upload middleware |
+| PM2 | 5.4.3 | Process manager (auto-restart) |
+| csv-stringify | 6.6.0 | CSV export |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 CivicPulse/
-├── 📁 client/                 # React frontend application
-│   ├── 📁 public/            # Static assets
-│   │   ├── favicon.ico
-│   │   ├── index.html
-│   │   └── manifest.json
-│   ├── 📁 src/
-│   │   ├── 📁 components/    # Reusable UI components
-│   │   │   ├── AccessGate/      # SuperAdmin access code gate
-│   │   │   ├── Button/          # Reusable button component
-│   │   │   ├── Card/            # Card component
-│   │   │   ├── ConfirmationModal/ # Delete confirmation
-│   │   │   ├── EditAssignmentModal/ # Edit assignments
-│   │   │   ├── EditProfileModal/  # Profile editing
-│   │   │   ├── EmptyState/      # Empty state UI
-│   │   │   ├── Filter/          # Filtering component
-│   │   │   ├── Forms/           # Form components
-│   │   │   ├── Headers/         # Header & navigation
-│   │   │   ├── ImageModal/      # Full-screen image viewer
-│   │   │   ├── Layouts/         # Page layout components
-│   │   │   ├── Loaders/         # Loading indicators
-│   │   │   ├── Map/             # Leaflet map component
-│   │   │   ├── Modal/           # Generic modal
-│   │   │   ├── Pagination/      # Table pagination
-│   │   │   ├── PriorityBadge/   # Priority indicators
-│   │   │   ├── ProgressTimeline/ # Complaint timeline
-│   │   │   ├── ReassignModal/   # Reassignment modal
-│   │   │   ├── ScrollToTop/     # Scroll to top button
-│   │   │   ├── StatCard/        # Statistics cards
-│   │   │   ├── StatusBadge/     # Status indicators
-│   │   │   ├── Table/           # Data table component
-│   │   │   ├── Toast/           # Toast notifications
-│   │   │   └── UserForm/        # User creation forms
-│   │   ├── 📁 Pages/         # Application pages
-│   │   │   ├── AboutUs/         # About page
-│   │   │   ├── Admin/           # Admin portal pages
-│   │   │   ├── Auth/            # Authentication pages
-│   │   │   ├── Citizen/         # Citizen portal pages
-│   │   │   ├── Contact/         # Contact page
-│   │   │   ├── Home/            # Landing page
-│   │   │   ├── NotFound/        # 404 page
-│   │   │   ├── Officer/         # Officer portal pages
-│   │   │   ├── SuperAdmin/      # SuperAdmin portal pages
-│   │   │   └── Unauthorized/    # 401 page
-│   │   ├── 📁 services/      # API service layer
-│   │   │   ├── adminService.js
-│   │   │   ├── api.js           # Axios instance
-│   │   │   ├── citizenService.js
-│   │   │   ├── officerService.js
-│   │   │   └── superAdminService.js
-│   │   ├── 📁 store/         # Redux store
-│   │   │   ├── slices/          # Redux slices
-│   │   │   ├── hooks.js         # Redux hooks
-│   │   │   └── store.js         # Store configuration
-│   │   ├── 📁 styles/        # Styling system
-│   │   │   ├── animations.js    # Keyframe animations
-│   │   │   ├── glassUtilities.js # Glass morphism
-│   │   │   ├── GlobalStyles.js  # Global styles
-│   │   │   ├── liquidGlass.js   # Liquid glass effects
-│   │   │   ├── reactSelectStyles.js # Select styles
-│   │   │   └── theme.js         # Theme configuration
-│   │   ├── 📁 utils/         # Utility functions
-│   │   │   ├── authStorage.js   # Auth token storage
-│   │   │   ├── colorMapper.js   # Color utilities
-│   │   │   ├── dateFormatter.js # Date formatting
-│   │   │   ├── scrollReactiveLighting.js # Scroll effects
-│   │   │   └── toast.js         # Toast utilities
-│   │   ├── 📁 context/       # React contexts
-│   │   │   └── authContext.js   # Auth context
-│   │   ├── 📁 hooks/         # Custom hooks
-│   │   │   ├── useImageModal.js # Image modal hook
-│   │   │   └── useScrollAnimation.js # Scroll animation
-│   │   ├── 📁 routes/        # Route configurations
-│   │   │   ├── protectedRoute.jsx # Route guard
-│   │   │   └── protectedRoutes.js # Route definitions
-│   │   ├── 📁 Data/          # Static data
+├── .github/
+│   └── workflows/
+│       ├── ci.yml             # CI — install + build check on every push
+│       └── keep-alive.yml     # Cron — pings Render /health every 14 min
+├── client/                    # React SPA
+│   ├── public/
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   ├── Pages/             # Route-level page components
+│   │   ├── services/          # Axios API service layer
+│   │   ├── store/             # Redux store + slices
+│   │   ├── styles/            # Theme, glass utilities, animations
+│   │   ├── utils/             # Auth storage, date, toast helpers
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── routes/            # Protected route definitions
+│   │   ├── context/           # Auth context
+│   │   ├── Data/              # Static page data
 │   │   ├── App.jsx
 │   │   └── index.js
-│   ├── .env                # Environment variables
-│   ├── package.json        # Frontend dependencies
-│   └── README.md           # Frontend documentation
-├── 📁 server/                # Node.js backend application
-│   ├── 📁 controllers/       # Business logic
-│   │   ├── admin/           # Admin controllers
-│   │   ├── citizen/         # Citizen controllers
-│   │   ├── general/         # Shared controllers
-│   │   ├── officer/         # Officer controllers
-│   │   └── superAdmin/      # SuperAdmin controllers
-│   ├── 📁 models/            # Database schemas
-│   │   ├── admin/           # Admin models
-│   │   ├── citizen/         # Citizen models
-│   │   ├── general/         # Shared models (Counter, Complaint, etc.)
-│   │   ├── officer/         # Officer models
-│   │   └── superAdmin/      # SuperAdmin models
-│   ├── 📁 routes/            # API endpoints
-│   │   ├── admin/           # Admin routes
-│   │   ├── citizen/         # Citizen routes
-│   │   ├── general/         # Shared routes
-│   │   ├── officer/         # Officer routes
-│   │   └── superAdmin/      # SuperAdmin routes
-│   ├── 📁 middleware/        # Custom middleware
-│   │   ├── authMiddleware.js # JWT authentication
-│   │   ├── errorMiddleware.js # Error handling
-│   │   ├── superAdminAccessMiddleware.js # Access code
-│   │   └── uploadMiddleware.js # File upload
-│   ├── 📁 config/            # Configuration files
-│   │   ├── cloudinary.js    # Cloudinary config
-│   │   └── db.js            # MongoDB connection
-│   ├── 📁 utils/             # Helper functions
-│   │   ├── authHelper.js    # Auth utilities
-│   │   ├── cloudinaryHelper.js # Image upload
-│   │   ├── generateEmployeeId.js # ID generation
-│   │   ├── generateToken.js # JWT generation
-│   │   ├── queryHelper.js   # Query builders
-│   │   ├── userHelper.js    # User utilities
-│   │   └── validationHelper.js # Validation
-│   ├── 📁 scripts/           # Utility scripts
-│   │   └── migrateTimeline.js # Data migration
-│   ├── server.js           # Entry point
-│   ├── .env                # Environment variables
-│   ├── package.json        # Backend dependencies
-│   └── README.md           # Backend documentation
-├── .amazonq/               # Amazon Q rules
-├── README.md               # This file
-└── sample-complaints.json  # Sample data
+│   ├── .env.example
+│   ├── vercel.json            # Vercel SPA rewrites
+│   └── package.json
+├── server/                    # Express REST API
+│   ├── config/                # DB + Cloudinary setup
+│   ├── controllers/           # Business logic (by role)
+│   ├── middleware/            # Auth, error, upload, access-code
+│   ├── models/                # Mongoose schemas (by role)
+│   ├── routes/                # API route definitions (by role)
+│   ├── scripts/               # One-off migration scripts
+│   ├── utils/                 # Auth, token, ID generation helpers
+│   ├── ecosystem.config.js    # PM2 process config
+│   ├── nodemon.json           # Nodemon dev config
+│   ├── Dockerfile             # Production Docker image
+│   ├── .dockerignore
+│   ├── .env.example
+│   └── package.json
+├── docker-compose.yml         # Local dev stack (MongoDB + API)
+├── render.yaml                # Render deployment config
+├── Makefile                   # Developer shortcuts
+├── .nvmrc                     # Node.js 20
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18.x or higher
-- MongoDB 6.x or higher
-- npm or yarn package manager
-- Cloudinary account (for image uploads)
+- Node.js 20+ (`nvm use` picks it up from `.nvmrc`)
+- npm 10+
+- MongoDB Atlas account (or run Docker locally — see below)
+- Cloudinary account
 
-### 1. Clone the Repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/your-username/CivicPulse.git
 cd CivicPulse
+nvm use          # switches to Node 20
 ```
 
-### 2. Backend Setup
+### 2. Install dependencies
 
 ```bash
-cd server
-npm install
-cp .env.example .env
-# Edit .env with your configuration
-npm run server
+make install
+# or manually:
+# cd server && npm install
+# cd client && npm install
 ```
 
-### 3. Frontend Setup
+### 3. Configure environment
 
 ```bash
-cd ../client
-npm install
-cp .env.example .env
-# Edit .env with your configuration
-npm start
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+# Fill in both .env files — see Environment Variables section below
 ```
 
-### 4. Create SuperAdmin Account
-
-**⚠️ Important: SuperAdmin portal is hidden and secured**
+### 4. Start development servers
 
 ```bash
-# Navigate to hidden SuperAdmin portal
-open http://localhost:3000/sys-admin-portal-x7k9m
-
-# Step 1: Enter access code when prompted
-# Get the code from your .env file: REACT_APP_SUPERADMIN_ACCESS_CODE
-# (See ACCESS_CODE.md for how to find/change it)
-
-# Step 2: After access granted, fill registration form:
-# - Full Name
-# - Email
-# - Password (min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char)
-# - Phone Number
-
-# Your SuperAdmin ID will be auto-generated (SA-000001, SA-000002, etc.)
+make dev          # starts both client (:3000) and server (:8080) concurrently
+# or separately:
+make dev-server   # API only  (nodemon)
+make dev-client   # React only
 ```
 
-**🔒 Security Notes:**
+### 5. Create the first SuperAdmin
 
-- SuperAdmin NOT visible in role selection (`/login`)
-- Requires access code (frontend AccessGate + backend middleware)
-- 3 failed attempts = lockout + redirect
-- Change access code in `.env` files for production
-- See `ACCESS_CODE.md` for complete documentation
+The SuperAdmin portal is deliberately hidden. Navigate to:
 
-### 5. Access the Application
+```
+http://localhost:3000/sys-admin-portal-x7k9m
+```
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-- **Database**: MongoDB running on default port 27017
+Enter the `REACT_APP_SUPERADMIN_ACCESS_CODE` from `client/.env`, then register. Your ID will be `SA-000001`.
+
+### 6. URLs
+
+| Service | URL |
+|---|---|
+| React client | http://localhost:3000 |
+| Express API | http://localhost:8080 |
+| API health | http://localhost:8080/health |
+| MongoDB (Docker) | mongodb://localhost:27017 |
 
 ---
 
-## 👥 User Roles
+## Make Commands
 
-<div align="center">
+```bash
+make help           # list all commands
 
-| Role               | ID Format | Access Level | Key Features                                                 |
-| ------------------ | --------- | ------------ | ------------------------------------------------------------ |
-| 🏠 **Citizen**     | CZ-XXXXXX | Basic        | Report issues, track complaints, view nearby problems        |
-| 👮 **Officer**     | OF-XXXXXX | Field        | Manage assigned tasks, update status, upload proof           |
-| 🏢 **Admin**       | AD-XXXXXX | Department   | Assign tasks, manage officers, generate reports              |
-| 🔧 **Super Admin** | SA-XXXXXX | System       | Full system access (Hidden portal with access code security) |
+# Install
+make install        # both workspaces
+make install-server
+make install-client
 
-</div>
+# Development
+make dev            # client + server (requires concurrently)
+make dev-server     # API only (nodemon)
+make dev-client     # React only
 
-### Sequential ID System
+# Production
+make build          # React production build → client/build/
+make start          # Express server with PM2 (production)
+make migrate        # run timeline migration script (once after deploy)
 
-Each role has a unique, sequential ID format:
+# Docker
+make docker-up      # start MongoDB + API containers
+make docker-down    # stop containers
+make docker-logs    # tail container logs
 
-- **Citizens**: CZ-000001, CZ-000002, CZ-000003...
-- **Officers**: OF-000001, OF-000002, OF-000003...
-- **Admins**: AD-000001, AD-000002, AD-000003...
-- **SuperAdmins**: SA-000001, SA-000002, SA-000003...
-
-IDs are automatically generated during user registration and increment sequentially per role using MongoDB atomic counters for thread-safe operations.
+# Cleanup
+make clean          # remove node_modules + build/
+make clean-build    # remove client/build/ only
+```
 
 ---
 
-## 📚 API Documentation
+## Docker (Local Dev)
 
-### Authentication Endpoints
+Spin up MongoDB + the Express API without installing MongoDB locally:
 
-```http
-POST /api/auth/login                      # User login (all roles)
+```bash
+make docker-up
+# API  → http://localhost:8080
+# Mongo → mongodb://localhost:27017
+
+# Then in a separate terminal:
+cd client && npm start
+```
+
+The server container mounts `./server` as a volume and runs nodemon — code changes hot-reload automatically.
+
+```bash
+make docker-down    # stop and remove containers
+make docker-logs    # follow logs
+```
+
+---
+
+## User Roles
+
+| Role | ID Format | Registration | Key Access |
+|---|---|---|---|
+| Citizen | `CZ-XXXXXX` | Self-register at `/citizen/register` | Report, track, view nearby issues |
+| Officer | `OF-XXXXXX` | Created by Admin | Assigned tasks, progress updates |
+| Admin | `AD-XXXXXX` | Created by SuperAdmin | Department complaints, officer management |
+| SuperAdmin | `SA-XXXXXX` | Hidden portal `/sys-admin-portal-x7k9m` | Full system access |
+
+IDs are generated sequentially using MongoDB atomic counters — thread-safe across concurrent registrations.
+
+### SuperAdmin Security
+
+- Login URL: `/sys-admin-portal-x7k9m` (not linked from anywhere)
+- Register URL: `/sys-admin-register-x7k9m`
+- Frontend: `AccessGate` component validates code before showing the form; 3 failed attempts redirect to home
+- Backend: `superAdminAccessMiddleware` validates `x-admin-access-code` request header
+- Both the client and server must have the **same** `SUPERADMIN_ACCESS_CODE` value
+
+---
+
+## Deployment
+
+### Client → Vercel
+
+1. Import the repo into Vercel, set **Root Directory** to `client`
+2. Framework preset: **Create React App**
+3. Add environment variables in the Vercel dashboard:
+   ```
+   REACT_APP_API_BASE_URL=https://your-api.onrender.com/api
+   REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code
+   ```
+4. Deploy — `client/vercel.json` handles SPA routing automatically
+
+### Server → Render
+
+1. Create a new **Web Service** on Render, connect the repo
+2. Set **Root Directory** to `server`
+3. Build command: `npm install`
+4. Start command: `npm start` (runs PM2 via `ecosystem.config.js`)
+5. Add all environment variables from the table below in the Render dashboard
+6. `render.yaml` at the repo root can automate this via Render Blueprints
+
+### Database → MongoDB Atlas
+
+1. Create a free M0 cluster
+2. Add a database user and whitelist `0.0.0.0/0` (or Render's static IPs)
+3. Copy the connection string into `MONGO_URI`
+
+### Keep-Alive (free tier)
+
+Render's free tier sleeps after 15 minutes of inactivity. Two options:
+
+**Option A — GitHub Actions** (already configured in `.github/workflows/keep-alive.yml`):
+- Pings `/health` every 14 minutes
+- Requires the `RENDER_API_URL` GitHub secret
+
+**Option B — UptimeRobot** (more reliable, recommended):
+- Sign up free at [uptimerobot.com](https://uptimerobot.com)
+- Add HTTP monitor → URL: `https://your-api.onrender.com/health`
+- Interval: 5 minutes
+
+---
+
+## Environment Variables
+
+### Server (`server/.env`)
+
+| Variable | Required | Description |
+|---|---|---|
+| `NODE_ENV` | Yes | `development` or `production` |
+| `PORT` | Yes | Server port (`8080` local, `10000` on Render) |
+| `MONGO_URI` | Yes | MongoDB Atlas connection string |
+| `MONGO_DB_NAME` | Yes | Database name (e.g. `CivicPulse`) |
+| `JWT_SECRET` | Yes | Long random string for signing tokens |
+| `FRONTEND_URL` | Yes | Full client URL for CORS (e.g. `https://civicpulse.vercel.app`) |
+| `CLOUDINARY_CLOUD_NAME` | Yes | From Cloudinary dashboard |
+| `CLOUDINARY_API_KEY` | Yes | From Cloudinary dashboard |
+| `CLOUDINARY_API_SECRET` | Yes | From Cloudinary dashboard |
+| `SUPERADMIN_ACCESS_CODE` | Yes | Secret code for SuperAdmin portal |
+
+### Client (`client/.env`)
+
+| Variable | Required | Description |
+|---|---|---|
+| `REACT_APP_API_BASE_URL` | Yes | Full API URL + `/api` (e.g. `https://your-api.onrender.com/api`) |
+| `REACT_APP_SUPERADMIN_ACCESS_CODE` | Yes | Must match server `SUPERADMIN_ACCESS_CODE` |
+
+---
+
+## GitHub Secrets
+
+Go to **repo → Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|---|---|
+| `RENDER_API_URL` | `https://your-app.onrender.com` (no trailing slash) |
+| `REACT_APP_API_BASE_URL` | `https://your-app.onrender.com/api` |
+| `REACT_APP_SUPERADMIN_ACCESS_CODE` | Same value as server `SUPERADMIN_ACCESS_CODE` |
+
+---
+
+## API Overview
+
+```
+GET  /health                              # Health check (Render + keep-alive)
+
 POST /api/citizens/register               # Citizen self-registration
-POST /api/superadmin/verify-access        # Verify SuperAdmin access code
-POST /api/superadmin/register             # SuperAdmin registration (requires access code header)
-GET  /api/auth/me                         # Get current user
-POST /api/auth/logout                     # User logout
+POST /api/citizens/login                  # Citizen login
+POST /api/auth/login                      # Officer / Admin login
+GET  /api/auth/me                         # Current user
+POST /api/auth/logout                     # Logout
+
+POST /api/superadmin/verify-access        # Validate access code
+POST /api/superadmin/register             # SuperAdmin registration
+POST /api/superadmin/login                # SuperAdmin login
+
+GET|POST        /api/complaints           # List / create complaints
+GET|PUT|DELETE  /api/complaints/:id       # Read / update / delete
+GET             /api/complaints/nearby    # Geo-filtered nearby complaints
+
+GET|POST        /api/admin/officers       # Officer management
+POST            /api/admin/complaints/:id/assign   # Assign to officer
+POST            /api/admin/complaints/:id/verify   # Verify resolution
+
+GET             /api/superadmin/users     # All users
+GET             /api/superadmin/reports/export  # CSV export
+GET             /api/superadmin/monitoring      # System stats
+
+GET|POST|PUT|DELETE /api/departments      # Department CRUD
+GET|POST|PUT|DELETE /api/superadmin/zones # Zone CRUD (GeoJSON)
+GET|PUT             /api/settings         # System settings
 ```
 
-### Complaint Management
-
-```http
-GET    /api/complaints        # Get complaints (filtered)
-POST   /api/complaints        # Create new complaint
-PUT    /api/complaints/:id    # Update complaint
-DELETE /api/complaints/:id    # Delete complaint
-GET    /api/complaints/nearby # Get nearby complaints
-```
-
-### User Management
-
-```http
-GET    /api/users            # Get users (admin only)
-POST   /api/users            # Create user (admin only)
-PUT    /api/users/:id        # Update user
-DELETE /api/users/:id        # Delete user (admin only)
-```
-
-For complete API documentation, see [API Reference](./server/README.md#api-endpoints).
-
----
-
-## 🔐 SuperAdmin Security
-
-SuperAdmin access is protected with multiple security layers:
-
-### **Hidden URLs**
-
-- Login: `/sys-admin-portal-x7k9m`
-- Register: `/sys-admin-register-x7k9m`
-- NOT visible in role selection page (`/login`)
-
-### **Access Code Protection**
-
-- **Frontend**: AccessGate component validates code
-- **Backend**: Middleware validates `x-admin-access-code` header
-- **Lockout**: 3 failed attempts = redirect to home
-
-### **Configuration**
-
-```env
-# client/.env
-REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code_here
-
-# server/.env
-SUPERADMIN_ACCESS_CODE=your_secure_code_here
-```
-
-### **Documentation**
-
-- 📄 `ACCESS_CODE.md` - How to get and change access code
-- 📄 `SUPERADMIN_SECURITY.md` - Complete security guide
-- 📄 `client/src/components/AccessGate/WORKFLOW.md` - AccessGate workflow
-
----
-
-## 🛠️ Development
-
-### Code Style Guidelines
-
-- **Frontend**: ESLint + Prettier configuration
-- **Backend**: Node.js best practices with async/await
-- **Database**: Mongoose schemas with validation
-- **Git**: Conventional commit messages
-
-### Development Workflow
-
-1. Create feature branch from `main`
-2. Implement changes with tests
-3. Run linting and tests
-4. Submit pull request
-5. Code review and merge
-
-### Testing
-
-```bash
-# Frontend tests
-cd client && npm test
-
-# Backend tests
-cd server && npm test
-
-# E2E tests
-npm run test:e2e
-```
-
----
-
-## 🚀 Deployment
-
-### Production Environment
-
-#### Frontend (Vercel/Netlify)
-
-```bash
-cd client
-npm run build
-# Deploy build folder
-```
-
-#### Backend (Heroku/AWS)
-
-```bash
-cd server
-# Set production environment variables
-npm start
-```
-
-#### Database (MongoDB Atlas)
-
-- Configure MongoDB Atlas cluster
-- Update connection string in production
-
-### Environment Variables
-
-#### Frontend (.env)
-
-```env
-REACT_APP_API_BASE_URL=https://your-api-domain.com/api
-```
-
-#### Backend (.env)
-
-```env
-NODE_ENV=production
-PORT=8080
-MONGO_URI=<your_mongodb_connection_string>
-JWT_SECRET=<your_jwt_secret>
-CLOUDINARY_CLOUD_NAME=<your_cloudinary_name>
-CLOUDINARY_API_KEY=<your_cloudinary_key>
-CLOUDINARY_API_SECRET=<your_cloudinary_secret>
-```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting pull requests.
-
-### How to Contribute
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-### Code of Conduct
-
-Please read our [Code of Conduct](CODE_OF_CONDUCT.md) to understand our community standards.
-
----
-
-## 📄 License
-
-This project is licensed under a Private License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 📞 Support
-
-For support and questions:
-
-- 📧 Email: support@civicpulse.com
-- 💬 Discord: [CivicPulse Community](https://discord.gg/civicpulse)
-- 📖 Documentation: [docs.civicpulse.com](https://docs.civicpulse.com)
-
----
-
-## 🙏 Acknowledgments
-
-- Thanks to all contributors who have helped build CivicPulse
-- Special thanks to the open-source community for the amazing tools and libraries
-- Inspired by the need for better civic engagement and transparent governance
+Full endpoint reference: [server/README.md](server/README.md#api-endpoints)
 
 ---
 
 <div align="center">
-  <p><strong>Built with ❤️ for better communities</strong></p>
+  <p>Built with care for better communities</p>
   <p>© 2026 CivicPulse. All rights reserved.</p>
 </div>

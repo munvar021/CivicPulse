@@ -21,6 +21,10 @@
     "react-toastify": "^11.0.5",
     "styled-components": "^6.3.8"
   },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -28,6 +28,10 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 const authRoutes = require("./routes/general/authRoutes");
 const citizenRoutes = require("./routes/citizen/citizenRoutes");
 const complaintRoutes = require("./routes/general/complaintRoutes");

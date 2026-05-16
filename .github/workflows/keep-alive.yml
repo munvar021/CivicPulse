@@ -1,0 +1,36 @@
+name: Keep Alive
+
+# Pings the Render API every 14 minutes to prevent the free-tier service
+# from spinning down due to inactivity (Render sleeps after 15 min).
+#
+# Setup:
+#   1. Go to GitHub → Settings → Secrets → Actions
+#   2. Add secret: RENDER_API_URL = https://your-app.onrender.com
+#
+# Note: GitHub Actions cron can be delayed up to ~10 min under load.
+# For guaranteed uptime use UptimeRobot (free, 5-min intervals):
+#   https://uptimerobot.com  →  Monitor type: HTTP(s)  →  URL: <RENDER_API_URL>/health
+
+on:
+  schedule:
+    - cron: "*/14 * * * *"
+  workflow_dispatch: # allow manual trigger from GitHub UI
+
+jobs:
+  ping:
+    name: Ping Render service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up API
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 30 \
+            "${{ secrets.RENDER_API_URL }}/health")
+
+          echo "Health check status: $STATUS"
+
+          if [ "$STATUS" = "200" ]; then
+            echo "Service is awake and healthy."
+          else
+            echo "Warning: unexpected status $STATUS — service may be cold-starting."
+          fi

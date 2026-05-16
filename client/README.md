@@ -1,586 +1,396 @@
-# CivicPulse Frontend 🎨
+# CivicPulse — Client
 
-Modern React-based frontend for the CivicPulse civic complaint management system, featuring a stunning liquid glass UI design with smooth animations and responsive layouts.
+React 18 SPA for CivicPulse. Features a liquid glass UI (glassmorphism), Redux Toolkit state management, Leaflet maps, and role-based routing for four user types.
 
-## 📋 Table of Contents
+**Deployed on:** Vercel
+**API:** CivicPulse server on Render
 
-- [Overview](#overview)
+---
+
+## Table of Contents
+
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [Features](#features)
-- [Components](#components)
-- [State Management](#state-management)
-- [Routing](#routing)
-- [Styling](#styling)
+- [Scripts](#scripts)
 - [Environment Variables](#environment-variables)
+- [Routes](#routes)
+- [State Management](#state-management)
+- [Styling System](#styling-system)
+- [API Layer](#api-layer)
+- [Deployment (Vercel)](#deployment-vercel)
 
 ---
 
-## 🌟 Overview
-
-The CivicPulse frontend is a single-page application (SPA) built with React 18, featuring:
-- **Liquid Glass UI**: Modern glassmorphism design with backdrop blur effects
-- **Responsive Design**: Mobile-first approach with media queries
-- **Smooth Animations**: Framer Motion and custom keyframe animations
-- **State Management**: Redux Toolkit with optimized caching
-- **Form Validation**: React Hook Form with comprehensive validation rules
-- **Image Management**: Full-screen image modal with navigation
-- **Interactive Maps**: Leaflet.js for location-based features
-
----
-
-## 💻 Tech Stack
+## Tech Stack
 
 | Package | Version | Purpose |
-|---------|---------|---------|
-| React | 18.2.0 | UI Framework |
+|---|---|---|
+| React | 18.2.0 | UI framework |
 | React Router DOM | 6.8.0 | Client-side routing |
 | Redux Toolkit | 2.11.2 | State management |
-| React Redux | 9.2.0 | Redux React bindings |
-| React Hook Form | 7.71.1 | Form management & validation |
-| Styled Components | 6.3.8 | CSS-in-JS styling |
-| Axios | 1.3.0 | HTTP client |
+| React Redux | 9.2.0 | Redux bindings |
+| React Hook Form | 7.71.1 | Form state + validation |
+| Styled Components | 6.3.8 | CSS-in-JS |
+| Axios | 1.3.0 | HTTP client with interceptors |
 | Leaflet | 1.9.3 | Interactive maps |
-| React Leaflet | 4.2.0 | React bindings for Leaflet |
-| Framer Motion | 12.34.0 | Animation library |
+| React Leaflet | 4.2.0 | Leaflet React bindings |
+| Framer Motion | 12.34.0 | Animations |
 | React Toastify | 11.0.5 | Toast notifications |
-| React Select | 5.10.2 | Enhanced select dropdowns |
-| Font Awesome | 7.1.0 | Icon library |
+| React Select | 5.10.2 | Enhanced dropdowns |
+| Font Awesome | 7.1.0 | Icons |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-client/src/
-├── components/          # Reusable UI components
-│   ├── AccessGate/     # SuperAdmin access code validation
-│   ├── Button/         # Custom button component
-│   ├── Card/           # Card component
-│   ├── ConfirmationModal/ # Delete confirmation modal
-│   ├── EditAssignmentModal/ # Assignment editing
-│   ├── EditProfileModal/ # Profile editing modal
-│   ├── EmptyState/     # Empty state UI
-│   ├── Filter/         # Filtering component
-│   ├── Forms/          # Form components (Department, Zone)
-│   ├── Headers/        # Header & navigation
-│   ├── ImageModal/     # Full-screen image viewer
-│   ├── Layouts/        # Page layout components
-│   ├── Loaders/        # Loading indicators & skeletons
-│   ├── Map/            # Leaflet map component
-│   ├── Modal/          # Generic modal component
-│   ├── Pagination/     # Table pagination
-│   ├── PriorityBadge/  # Priority level indicators
-│   ├── ProgressTimeline/ # Complaint progress timeline
-│   ├── ReassignModal/  # Task reassignment modal
-│   ├── ScrollToTop/    # Scroll to top button
-│   ├── StatCard/       # Statistics display cards
-│   ├── StatusBadge/    # Status indicators
-│   ├── Table/          # Data table component
-│   ├── Toast/          # Toast notification wrapper
-│   └── UserForm/       # User creation forms
-├── Pages/              # Application pages
-│   ├── AboutUs/        # About page
-│   ├── Admin/          # Admin portal pages
-│   │   ├── AssignOfficer/
-│   │   ├── ComplaintManagement/
-│   │   ├── Dashboard/
-│   │   ├── Escalations/
-│   │   ├── OfficerManagement/
-│   │   ├── Profile/
-│   │   └── Reports/
-│   ├── Auth/           # Authentication pages
-│   │   ├── Login/      # Role-specific login pages
-│   │   ├── Register/   # Registration pages
-│   │   └── roleSelection.jsx
-│   ├── Citizen/        # Citizen portal pages
-│   │   ├── Dashboard/
-│   │   ├── EditComplaint/
-│   │   ├── MyComplaints/
-│   │   ├── NearbyComplaintDetails/
-│   │   ├── NearbyIssues/
-│   │   ├── Profile/
-│   │   ├── ReportIssue/
-│   │   └── ResolutionFeedback/
-│   ├── Contact/        # Contact page
-│   ├── Home/           # Landing page
-│   ├── NotFound/       # 404 page
-│   ├── Officer/        # Officer portal pages
-│   │   ├── AssignedTasks/
-│   │   ├── CompleteTask/
-│   │   ├── Dashboard/
-│   │   ├── Profile/
-│   │   ├── UpdateStatus/
-│   │   └── WorkHistory/
-│   ├── SuperAdmin/     # SuperAdmin portal pages
-│   │   ├── ComplaintManagement/
-│   │   ├── Dashboard/
-│   │   ├── DepartmentManagement/
-│   │   ├── GlobalReports/
-│   │   ├── Profile/
-│   │   ├── Settings/
-│   │   ├── SystemMonitoring/
-│   │   ├── UserManagement/
-│   │   └── ZoneManagement/
-│   └── Unauthorized/   # 401 page
-├── services/           # API service layer
-│   ├── adminService.js
-│   ├── api.js          # Axios instance with interceptors
-│   ├── citizenService.js
-│   ├── officerService.js
-│   └── superAdminService.js
-├── store/              # Redux store
-│   ├── slices/         # Redux slices
-│   │   ├── authSlice.js
-│   │   ├── complaintsSlice.js
-│   │   ├── dashboardSlice.js
-│   │   ├── departmentsSlice.js
-│   │   ├── usersSlice.js
-│   │   └── zonesSlice.js
-│   ├── hooks.js        # Typed Redux hooks
-│   └── store.js        # Store configuration
-├── styles/             # Styling system
-│   ├── animations.js   # Keyframe animations
-│   ├── glassUtilities.js # Glass morphism utilities
-│   ├── GlobalStyles.js # Global CSS styles
-│   ├── liquidGlass.js  # Liquid glass effects
-│   ├── reactSelectStyles.js # React Select custom styles
-│   └── theme.js        # Theme configuration
-├── utils/              # Utility functions
-│   ├── authStorage.js  # LocalStorage auth utilities
-│   ├── colorMapper.js  # Color mapping utilities
-│   ├── dateFormatter.js # Date formatting
-│   ├── scrollReactiveLighting.js # Scroll effects
-│   └── toast.js        # Toast notification utilities
-├── context/            # React contexts
-│   └── authContext.js  # Authentication context
-├── hooks/              # Custom React hooks
-│   ├── useImageModal.js # Image modal state management
-│   └── useScrollAnimation.js # Scroll-based animations
-├── routes/             # Routing configuration
-│   ├── protectedRoute.jsx # Route guard component
-│   └── protectedRoutes.js # Route definitions by role
-├── Data/               # Static data
-│   ├── aboutUsData.js
-│   ├── contactData.js
-│   └── homeData.js
-├── App.jsx             # Main app component
-└── index.js            # Entry point
+client/
+├── public/
+│   ├── favicon.ico
+│   ├── index.html
+│   └── manifest.json
+├── src/
+│   ├── App.jsx                        # Root component — router + global styles
+│   ├── index.js                       # React entry point
+│   │
+│   ├── Pages/                         # Route-level page components
+│   │   ├── Home/                      # Public landing page
+│   │   ├── AboutUs/
+│   │   ├── Contact/
+│   │   ├── Auth/
+│   │   │   ├── Login/                 # citizenLogin, officerLogin, adminLogin, superAdminLogin
+│   │   │   ├── Register/              # citizenRegister, superAdminRegister
+│   │   │   └── roleSelection.jsx      # /login — role picker
+│   │   ├── Citizen/
+│   │   │   ├── Dashboard/
+│   │   │   ├── ReportIssue/
+│   │   │   ├── MyComplaints/
+│   │   │   ├── EditComplaint/
+│   │   │   ├── NearbyIssues/
+│   │   │   ├── NearbyComplaintDetails/
+│   │   │   ├── ResolutionFeedback/
+│   │   │   └── Profile/
+│   │   ├── Officer/
+│   │   │   ├── Dashboard/
+│   │   │   ├── AssignedTasks/
+│   │   │   ├── UpdateStatus/
+│   │   │   ├── CompleteTask/
+│   │   │   ├── WorkHistory/
+│   │   │   └── Profile/
+│   │   ├── Admin/
+│   │   │   ├── Dashboard/
+│   │   │   ├── ComplaintManagement/
+│   │   │   ├── AssignOfficer/
+│   │   │   ├── OfficerManagement/
+│   │   │   ├── Escalations/
+│   │   │   ├── Reports/
+│   │   │   └── Profile/
+│   │   ├── SuperAdmin/
+│   │   │   ├── Dashboard/
+│   │   │   ├── ComplaintManagement/
+│   │   │   ├── UserManagement/
+│   │   │   ├── DepartmentManagement/
+│   │   │   ├── ZoneManagement/
+│   │   │   ├── GlobalReports/
+│   │   │   ├── SystemMonitoring/
+│   │   │   ├── Settings/
+│   │   │   └── Profile/
+│   │   ├── NotFound/                  # 404
+│   │   └── Unauthorized/              # 403
+│   │
+│   ├── components/                    # Reusable UI components
+│   │   ├── AccessGate/                # SuperAdmin access-code gate
+│   │   ├── Button/
+│   │   ├── Card/
+│   │   ├── ConfirmationModal/
+│   │   ├── EditAssignmentModal/
+│   │   ├── EditProfileModal/
+│   │   ├── EmptyState/
+│   │   ├── Filter/
+│   │   ├── Forms/                     # Department + Zone forms
+│   │   ├── Headers/                   # Navigation headers
+│   │   ├── ImageModal/                # Full-screen image viewer
+│   │   ├── Layouts/                   # Dashboard, Form, Table, Profile, etc.
+│   │   ├── Loaders/                   # Spinner + skeleton loaders
+│   │   ├── Map/                       # Leaflet map wrapper
+│   │   ├── Modal/
+│   │   ├── Pagination/
+│   │   ├── PriorityBadge/
+│   │   ├── ProgressTimeline/
+│   │   ├── ReassignModal/
+│   │   ├── ScrollToTop/
+│   │   ├── StatCard/
+│   │   ├── StatusBadge/
+│   │   ├── Table/
+│   │   ├── Toast/
+│   │   └── UserForm/
+│   │
+│   ├── services/                      # Axios API calls
+│   │   ├── api.js                     # Axios instance + interceptors
+│   │   ├── citizenService.js
+│   │   ├── officerService.js
+│   │   ├── adminService.js
+│   │   └── superAdminService.js
+│   │
+│   ├── store/                         # Redux store
+│   │   ├── store.js
+│   │   ├── hooks.js                   # useAppDispatch / useAppSelector
+│   │   └── slices/
+│   │       ├── authSlice.js
+│   │       ├── complaintsSlice.js
+│   │       ├── dashboardSlice.js
+│   │       ├── departmentsSlice.js
+│   │       ├── usersSlice.js
+│   │       └── zonesSlice.js
+│   │
+│   ├── styles/
+│   │   ├── theme.js                   # Colours, glass tokens
+│   │   ├── GlobalStyles.js            # Body reset + CSS variables
+│   │   ├── liquidGlass.js             # Glassmorphism mixins
+│   │   ├── glassUtilities.js          # Shared glass helpers
+│   │   ├── animations.js              # Keyframe definitions
+│   │   └── reactSelectStyles.js       # Custom React Select theme
+│   │
+│   ├── utils/
+│   │   ├── authStorage.js             # localStorage / sessionStorage token helpers
+│   │   ├── colorMapper.js
+│   │   ├── dateFormatter.js
+│   │   ├── scrollReactiveLighting.js  # Scroll-driven ambient lighting effect
+│   │   └── toast.js
+│   │
+│   ├── hooks/
+│   │   ├── useImageModal.js
+│   │   └── useScrollAnimation.js
+│   │
+│   ├── routes/
+│   │   ├── protectedRoute.jsx         # HOC — redirects if role doesn't match
+│   │   └── protectedRoutes.js         # All role → path → component mappings
+│   │
+│   ├── context/
+│   │   └── authContext.js
+│   │
+│   └── Data/                          # Static content for public pages
+│       ├── homeData.js
+│       ├── aboutUsData.js
+│       └── contactData.js
+│
+├── .env.example
+├── .gitignore
+├── vercel.json                        # SPA rewrite rules for Vercel
+└── package.json
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.x or higher
-- npm or yarn
+- Node.js 20+ (`nvm use` at repo root picks up `.nvmrc`)
+- Server running at `http://localhost:8080` (or use `make docker-up` from repo root)
 
-### Installation
+### Install
 
 ```bash
-# Install dependencies
 npm install
-
-# Create environment file
 cp .env.example .env
-
-# Update environment variables
-# Edit .env with your configuration
+# Set REACT_APP_API_BASE_URL and REACT_APP_SUPERADMIN_ACCESS_CODE
 ```
 
-### Environment Variables
+### Run
 
-Create a `.env` file in the client directory:
+```bash
+npm start       # dev server → http://localhost:3000
+```
+
+---
+
+## Scripts
+
+| Script | Description |
+|---|---|
+| `npm start` | Start development server on :3000 with hot-reload |
+| `npm run build` | Production build → `build/` |
+| `npm test` | Run Jest tests |
+
+---
+
+## Environment Variables
 
 ```env
+# URL of the Express API — include /api suffix
 REACT_APP_API_BASE_URL=http://localhost:8080/api
-REACT_APP_SUPERADMIN_ACCESS_CODE=<your_secure_access_code>
+
+# Must match server SUPERADMIN_ACCESS_CODE exactly
+REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code
 ```
 
-### Development
+> All `REACT_APP_*` variables are baked into the bundle at build time. Set them in the Vercel dashboard for production builds — never commit real values to git.
 
-```bash
-# Start development server
-npm start
+---
 
-# Build for production
-npm run build
+## Routes
 
-# Run tests
-npm test
+### Public
+
+| Path | Component |
+|---|---|
+| `/` | Home |
+| `/about` | About Us |
+| `/contact` | Contact |
+| `/login` | Role Selection |
+| `/citizen/login` | Citizen Login |
+| `/citizen/register` | Citizen Register |
+| `/officer/login` | Officer Login |
+| `/admin/login` | Admin Login |
+| `/sys-admin-portal-x7k9m` | SuperAdmin Login (hidden) |
+| `/sys-admin-register-x7k9m` | SuperAdmin Register (hidden) |
+
+### Protected — Citizen
+
+| Path | Page |
+|---|---|
+| `/dashboard` | Dashboard |
+| `/report-issue` | Report new complaint |
+| `/my-complaints` | Complaint list |
+| `/complaint/:id` | Complaint details |
+| `/edit-complaint/:id` | Edit complaint |
+| `/nearby-issues` | Map of nearby issues |
+| `/nearby-complaint/:id` | Nearby complaint detail |
+| `/feedback/:id` | Resolution feedback |
+| `/profile` | Profile |
+
+### Protected — Officer
+
+| Path | Page |
+|---|---|
+| `/officer/dashboard` | Dashboard |
+| `/officer/assigned-tasks` | Task list |
+| `/officer/task/:id` | Task details |
+| `/officer/update-status/:id` | Post progress update |
+| `/officer/complete-task/:id` | Mark task complete |
+| `/officer/work-history` | Work history |
+| `/officer/profile` | Profile |
+
+### Protected — Admin
+
+| Path | Page |
+|---|---|
+| `/admin/dashboard` | Dashboard |
+| `/admin/complaints` | Complaint management |
+| `/admin/complaint/:id` | Complaint details |
+| `/admin/assign/:id` | Assign officer |
+| `/admin/officers` | Officer management |
+| `/admin/escalations` | Escalated complaints |
+| `/admin/reports` | Department reports |
+| `/admin/profile` | Profile |
+
+### Protected — SuperAdmin
+
+| Path | Page |
+|---|---|
+| `/superadmin/dashboard` | Dashboard |
+| `/superadmin/complaints` | All complaints |
+| `/superadmin/complaint/:id` | Complaint details |
+| `/superadmin/users` | User management |
+| `/superadmin/departments` | Department management |
+| `/superadmin/zones` | Zone management |
+| `/superadmin/reports` | Global reports (CSV export) |
+| `/superadmin/monitoring` | System monitoring |
+| `/superadmin/settings` | System settings |
+| `/superadmin/profile` | Profile |
+
+Route guards live in `protectedRoute.jsx` — it reads the role from the Redux auth slice and redirects to `/unauthorized` if the role doesn't match.
+
+---
+
+## State Management
+
+All async data lives in Redux. Slices use `createAsyncThunk` for API calls and keep a `lastFetched` timestamp to avoid redundant requests (cache window: ~60 seconds — responsible for the ~60–70 % API call reduction vs. naïve fetching).
+
+| Slice | State |
+|---|---|
+| `authSlice` | Current user, token, `checkingAuth` flag |
+| `complaintsSlice` | Complaint list, detail, filters, pagination |
+| `dashboardSlice` | Role-specific dashboard stats |
+| `departmentsSlice` | Department list |
+| `usersSlice` | User / officer list |
+| `zonesSlice` | Zone list |
+
+---
+
+## Styling System
+
+All components are styled with `styled-components`. The theme is defined in `styles/theme.js` and provides:
+
+- **Background tokens:** `background.base` (#0B0F14), `background.ambient`, `background.lifted`
+- **Glass tokens:** `glass.base` (rgba white 7%), `glass.border` (rgba white 16%)
+- **Primary:** `#3b82f6` (blue)
+- **Status:** `success` (#10b981), `warning` (#f59e0b), `danger` (#ef4444)
+
+The `liquidGlass.js` mixin gives any component the glass card appearance:
+
+```js
+background: rgba(255,255,255,0.07);
+backdrop-filter: blur(40px) saturate(180%);
+border: 1px solid rgba(255,255,255,0.16);
+box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 ```
 
-The app will be available at `http://localhost:3000`
+`GlobalStyles.js` applies a dark background, font defaults, and scrollbar styling globally.
 
 ---
 
-## ✨ Features
+## API Layer
 
-### 🎨 UI/UX Features
+`services/api.js` exports a configured Axios instance:
 
-- **Liquid Glass Design**: Modern glassmorphism with backdrop blur
-- **Responsive Layout**: Mobile, tablet, and desktop optimized
-- **Smooth Animations**: Fade, slide, scale animations
-- **Scroll Effects**: Reactive lighting and scroll-based animations
-- **Dark Theme**: Consistent dark theme throughout
-- **Toast Notifications**: Non-intrusive user feedback
-- **Loading States**: Skeleton loaders and spinners
-- **Empty States**: Friendly empty state messages
+- `baseURL` → `REACT_APP_API_BASE_URL`
+- `withCredentials: true` (sends cookies cross-domain)
+- `timeout: 10000 ms`
 
-### 🔐 Authentication
+**Request interceptor:**
+1. Reads JWT from `localStorage` / `sessionStorage` (via `authStorage.js`) and adds `Authorization: Bearer <token>`
+2. For any `/superadmin` route (except `/verify-access`), adds `x-admin-access-code` header from env
 
-- **Role-Based Access**: Citizen, Officer, Admin, SuperAdmin
-- **JWT Authentication**: Secure token-based auth
-- **Protected Routes**: Route guards for authorized access
-- **Persistent Sessions**: LocalStorage token management
-- **Auto Logout**: Token expiration handling
-
-### 📝 Form Management
-
-- **React Hook Form**: Efficient form state management
-- **Validation Rules**: Comprehensive field validation
-- **Error Messages**: Field-level error display
-- **File Upload**: Multi-file upload with preview
-- **Image Modal**: Click to view images in full screen
-
-### 🗺️ Map Features
-
-- **Interactive Maps**: Leaflet.js integration
-- **Location Picker**: Click to select location
-- **GPS Integration**: Auto-detect user location
-- **Markers**: Display complaint locations
-- **Popups**: Show complaint details on map
-
-### 📊 Data Management
-
-- **Redux State**: Centralized state management
-- **Optimized Caching**: 60-70% fewer API calls
-- **Pagination**: Server-side pagination
-- **Filtering**: Multi-criteria filtering
-- **Sorting**: Column-based sorting
-- **Search**: Keyword-based search
+**Response interceptor:**
+- `401` → clears stored token, redirects to `/login`
+- `403` → shows "Access denied" toast
+- `5xx` → shows "Server error" toast
+- Timeout → shows "Request timeout" toast
 
 ---
 
-## 🧩 Components
+## Deployment (Vercel)
 
-### Core Components
+### Setup
 
-#### ImageModal
-Full-screen image viewer with navigation:
-- Click any image to open
-- Navigate between multiple images
-- Keyboard support (Escape, Arrow keys)
-- Click outside to close
-- Image counter display
-- React Portal for proper positioning
+1. Import repo into Vercel → set **Root Directory** to `client`
+2. Framework preset: **Create React App** (auto-detected)
+3. Add environment variables in the Vercel dashboard:
+   ```
+   REACT_APP_API_BASE_URL=https://your-api.onrender.com/api
+   REACT_APP_SUPERADMIN_ACCESS_CODE=your_secure_code
+   ```
+4. Deploy
 
-#### ProgressTimeline
-Visual timeline of complaint progress:
-- Chronological event display
-- Status updates with icons
-- Image attachments
-- Metadata display (reassignments, due dates)
-- Scroll-based animations
+### SPA routing
 
-#### Map
-Interactive Leaflet map component:
-- Location selection
-- GPS integration
-- Marker display
-- Popup information
-- Responsive design
+`vercel.json` rewrites all paths to `index.html` so React Router handles routing client-side:
 
-#### Table
-Data table with advanced features:
-- Pagination
-- Sorting
-- Filtering
-- Search
-- Empty states
-- Loading states
-
-### Layout Components
-
-- **FormPageLayout**: Form pages with back button
-- **DashboardLayout**: Dashboard pages with stats
-- **TablePageLayout**: Table pages with filters
-- **ComplaintDetailsLayout**: Complaint detail view
-- **ProfileLayout**: User profile pages
-
-### UI Components
-
-- **Button**: Customizable button with variants
-- **Card**: Container with glass effect
-- **Modal**: Generic modal component
-- **Badge**: Status and priority indicators
-- **Loader**: Loading spinners and skeletons
-- **EmptyState**: Empty state messages
-- **Toast**: Notification system
-
----
-
-## 🔄 State Management
-
-### Redux Slices
-
-#### authSlice
-- User authentication state
-- Login/logout actions
-- Token management
-- User profile data
-
-#### complaintsSlice
-- Complaint list
-- Filters and pagination
-- CRUD operations
-- Caching logic
-
-#### dashboardSlice
-- Dashboard statistics
-- Recent complaints
-- Performance metrics
-
-#### departmentsSlice
-- Department list
-- Department CRUD
-
-#### usersSlice
-- User management
-- Officer list
-- User CRUD
-
-#### zonesSlice
-- Zone management
-- Geographic data
-
----
-
-## 🛣️ Routing
-
-### Public Routes
-- `/` - Home page
-- `/about` - About page
-- `/contact` - Contact page
-- `/login` - Role selection
-- `/citizen/login` - Citizen login
-- `/citizen/register` - Citizen registration
-- `/officer/login` - Officer login
-- `/admin/login` - Admin login
-- `/sys-admin-portal-x7k9m` - SuperAdmin login (hidden)
-- `/sys-admin-register-x7k9m` - SuperAdmin register (hidden)
-
-### Protected Routes
-
-#### Citizen Routes
-- `/dashboard` - Citizen dashboard
-- `/report-issue` - Report new complaint
-- `/my-complaints` - View complaints
-- `/complaint/:id` - Complaint details
-- `/edit-complaint/:id` - Edit complaint
-- `/nearby-issues` - Nearby complaints
-- `/nearby-complaint/:id` - Nearby complaint details
-- `/feedback/:id` - Provide feedback
-- `/profile` - User profile
-
-#### Officer Routes
-- `/officer/dashboard` - Officer dashboard
-- `/officer/assigned-tasks` - Task list
-- `/officer/task/:id` - Task details
-- `/officer/update-status/:id` - Update task status
-- `/officer/complete-task/:id` - Complete task
-- `/officer/work-history` - Work history
-- `/officer/profile` - Officer profile
-
-#### Admin Routes
-- `/admin/dashboard` - Admin dashboard
-- `/admin/complaints` - Complaint management
-- `/admin/complaint/:id` - Complaint details
-- `/admin/assign-officer/:id` - Assign officer
-- `/admin/officers` - Officer management
-- `/admin/escalations` - Escalated complaints
-- `/admin/reports` - Reports
-- `/admin/profile` - Admin profile
-
-#### SuperAdmin Routes
-- `/superadmin/dashboard` - SuperAdmin dashboard
-- `/superadmin/users` - User management
-- `/superadmin/departments` - Department management
-- `/superadmin/zones` - Zone management
-- `/superadmin/complaints` - All complaints
-- `/superadmin/complaint/:id` - Complaint details
-- `/superadmin/reports` - Global reports
-- `/superadmin/monitoring` - System monitoring
-- `/superadmin/settings` - System settings
-- `/superadmin/profile` - SuperAdmin profile
-
----
-
-## 🎨 Styling
-
-### Theme System
-
-The app uses a centralized theme configuration:
-
-```javascript
-// theme.js
-export const theme = {
-  colors: {
-    background: {
-      base: '#0B0F14',
-      ambient: '#141A22',
-      lifted: '#111827',
-    },
-    glass: {
-      base: 'rgba(255, 255, 255, 0.07)',
-      border: 'rgba(255, 255, 255, 0.16)',
-      muted: 'rgba(255, 255, 255, 0.04)',
-    },
-    primary: {
-      main: '#3b82f6',
-      light: '#60a5fa',
-      dark: '#2563eb',
-    },
-    status: {
-      success: '#10b981',
-      warning: '#f59e0b',
-      danger: '#ef4444',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: 'rgba(255, 255, 255, 0.72)',
-      disabled: 'rgba(255, 255, 255, 0.38)',
-    },
-  },
-  liquidGlass: {
-    background: 'rgba(255, 255, 255, 0.07)',
-    backdropFilter: 'blur(40px) saturate(180%)',
-    border: '1px solid rgba(255, 255, 255, 0.16)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-  },
-};
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
 ```
 
-### Styled Components
+Without this, refreshing any deep URL (e.g. `/dashboard`) would return a 404 from Vercel.
 
-All components use styled-components for styling:
-- Scoped styles
-- Theme integration
-- Dynamic styling
-- Media queries
-- Animations
-
-### Animations
-
-Custom keyframe animations:
-- `fadeIn` - Fade in effect
-- `fadeInUp` - Fade in from bottom
-- `fadeInDown` - Fade in from top
-- `fadeInLeft` - Fade in from left
-- `fadeInRight` - Fade in from right
-- `scaleIn` - Scale in effect
-- `slideInUp` - Slide in from bottom
-- `float` - Floating animation
-- `pulse` - Pulse effect
-- `glow` - Glow effect
-- `shimmer` - Shimmer effect
-- `rotate` - Rotation animation
-- `bounce` - Bounce effect
-
----
-
-## 🔧 Environment Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `REACT_APP_API_BASE_URL` | Backend API URL | `http://localhost:8080/api` |
-| `REACT_APP_SUPERADMIN_ACCESS_CODE` | SuperAdmin access code | `<your_secure_code>` |
-
----
-
-## 📦 Build & Deployment
-
-### Production Build
+### Production build locally
 
 ```bash
 npm run build
+# Output: client/build/
+# Or from repo root: make build
 ```
-
-Creates optimized production build in `build/` directory.
-
-### Deployment Options
-
-#### Vercel
-```bash
-vercel --prod
-```
-
-#### Netlify
-```bash
-netlify deploy --prod
-```
-
-#### AWS S3 + CloudFront
-```bash
-aws s3 sync build/ s3://your-bucket-name
-```
-
----
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run tests in watch mode
-npm test -- --watch
-```
-
----
-
-## 📝 Code Style
-
-- **ESLint**: Code linting
-- **Prettier**: Code formatting
-- **Naming Conventions**:
-  - Components: PascalCase
-  - Files: camelCase
-  - Constants: UPPER_SNAKE_CASE
-  - Functions: camelCase
-
----
-
-## 🤝 Contributing
-
-1. Follow the existing code structure
-2. Use styled-components for styling
-3. Add PropTypes for components
-4. Write meaningful commit messages
-5. Test before submitting PR
-
----
-
-## 📄 License
-
-Private License - All rights reserved
-
----
-
-## 🙏 Acknowledgments
-
-- React team for the amazing framework
-- Styled Components for CSS-in-JS
-- Redux Toolkit for state management
-- Leaflet for mapping capabilities
-- Font Awesome for icons
-
----
-
-**Built with ❤️ for better communities**
