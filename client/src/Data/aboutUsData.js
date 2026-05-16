@@ -56,17 +56,17 @@ export const impactStatsData = [
 
 export const journeyData = [
   {
-    year: "2024",
+    year: "2026",
     title: "Platform Launch",
     text: "CivicPulse officially launched, connecting citizens with local government services across 8 zones.",
   },
   {
-    year: "2024",
+    year: "2026",
     title: "First 1000 Issues",
     text: "Reached milestone of 1000 civic issues reported and successfully resolved through the platform.",
   },
   {
-    year: "2024",
+    year: "2026",
     title: "Community Growth",
     text: "Expanded to serve thousands of citizens with dedicated field officers and department admins.",
   },

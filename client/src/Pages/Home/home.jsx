@@ -481,7 +481,7 @@ const Home = () => {
             </p>
           </FooterSection>
         </FooterContent>
-        <Copyright>&copy; 2024 CivicPulse. All rights reserved.</Copyright>
+        <Copyright>&copy; 2026 CivicPulse. All rights reserved.</Copyright>
       </Footer>
     </HomeContainer>
   );

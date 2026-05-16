@@ -88,7 +88,7 @@ const ResolutionFeedback = () => {
       <ProofSection>
         <h3>Completion Proof</h3>
         <ProofImage src="/placeholder-proof.jpg" alt="Completion proof" />
-        <p>Uploaded by field officer on 2024-01-18</p>
+        <p>Uploaded by field officer on 2026-01-18</p>
       </ProofSection>
 
       <form onSubmit={handleSubmit(onSubmit)}>
